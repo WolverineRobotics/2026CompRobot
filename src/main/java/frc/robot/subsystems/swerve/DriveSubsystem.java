@@ -1,45 +1,82 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
 
-    private final SwerveModule topLeftModule; 
-    private final SwerveModule topRightModule; 
-    private final SwerveModule bottomLeftModule; 
-    private final SwerveModule bottomRightModule; 
+    // Declaring Swerve Module objects
+    private final SwerveModule frontLeftModule; 
+    private final SwerveModule frontRightModule; 
+    private final SwerveModule backLeftModule; 
+    private final SwerveModule backRightModule; 
+
+    // Declaring Swerve Kinematics Objects 
+    private final SwerveDriveKinematics m_DriveKinematics; 
+
+    // Declaring Gyroscope
+    private final Pigeon2 gyro; 
 
     public DriveSubsystem() {
 
-        // Declaring Swerve Module objects 
-        topLeftModule = new SwerveModule(
-            DriveConstants.topLeftDriveID, 
-            DriveConstants.topLeftAngleID,
-            DriveConstants.topLeftAbsoluteEncoder, 
-            DriveConstants.topLeftEncoderOffset
+        // Defining Swerve Module objects 
+        frontLeftModule = new SwerveModule(
+            DriveConstants.frontLeftDriveID, 
+            DriveConstants.frontLeftAngleID,
+            DriveConstants.frontLeftAbsoluteEncoder, 
+            DriveConstants.frontLeftEncoderOffset
         );
 
-        topRightModule = new SwerveModule(
-            DriveConstants.topRightDriveID, 
-            DriveConstants.topRightAngleID,
-            DriveConstants.topRightAbsoluteEncoder, 
-            DriveConstants.topRightEncoderOffset
+        frontRightModule = new SwerveModule(
+            DriveConstants.frontRightDriveID, 
+            DriveConstants.frontRightAngleID,
+            DriveConstants.frontRightAbsoluteEncoder, 
+            DriveConstants.frontRightEncoderOffset
         );
 
-        bottomLeftModule = new SwerveModule(
-            DriveConstants.bottomLeftDriveID, 
-            DriveConstants.bottomLeftAngleID,
-            DriveConstants.bottomLeftAbsoluteEncoder, 
-            DriveConstants.bottomLeftEncoderOffset
+        backLeftModule = new SwerveModule(
+            DriveConstants.backLeftDriveID, 
+            DriveConstants.backLeftAngleID,
+            DriveConstants.backLeftAbsoluteEncoder, 
+            DriveConstants.backLeftEncoderOffset
         );
 
-        bottomRightModule = new SwerveModule(
-            DriveConstants.bottomRightDriveID, 
-            DriveConstants.bottomRightAngleID,
-            DriveConstants.bottomRightAbsoluteEncoder,
-            DriveConstants.bottomRightEncoderOffset
+        backRightModule = new SwerveModule(
+            DriveConstants.backRightDriveID, 
+            DriveConstants.backRightAngleID,
+            DriveConstants.backRightAbsoluteEncoder,
+            DriveConstants.backRightEncoderOffset
         );
+
+        // Defining Swerve Kinematics 
+        m_DriveKinematics = new SwerveDriveKinematics(
+            new Translation2d(), 
+            new Translation2d(),
+            new Translation2d(), 
+            new Translation2d()
+        );
+
+        // Defining Gyroscope 
+        gyro = new Pigeon2(DriveConstants.gyroID); 
+    }
+
+    public void drive(double horizontal, double vertical, double rotation) {
+        // Generating the nessasery modules states for the given speeds
+        SwerveModuleState[] moduleStates = m_DriveKinematics.toSwerveModuleStates(
+            ChassisSpeeds.fromFieldRelativeSpeeds(horizontal, vertical, rotation, gyro.getRotation2d())
+        ); 
+
+        // Setting each swerve module to the correct state
+        frontLeftModule.setState(moduleStates[0]);
+        frontRightModule.setState(moduleStates[1]);
+        backLeftModule.setState(moduleStates[2]);
+        backRightModule.setState(moduleStates[3]);
     }
     
 }
