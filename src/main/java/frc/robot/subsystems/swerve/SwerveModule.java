@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveModule {
@@ -63,8 +64,12 @@ public class SwerveModule {
     
     public void setState(SwerveModuleState targetState) {
         // Setting the drive and angle motors using PID controllers and the target module state
-        driveMotor.set(drivePID.calculate(driveEncoder.getVelocity(), targetState.speedMetersPerSecond));
-        angleMotor.set(anglePID.calculate(absoluteEncoder.get() + encoderOffset, targetState.angle.getDegrees()));
+        driveMotor.set(drivePID.calculate(driveEncoder.getVelocity(), 
+            (targetState.speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor
+        ));
+
+
+        angleMotor.set(anglePID.calculate(getAbsoluteAngle().getDegrees(), targetState.angle.getDegrees()));
 
     }
 
@@ -80,6 +85,13 @@ public class SwerveModule {
     // Getter for velocity of drive wheel
     public double getDriveVelocity() {
         return driveEncoder.getVelocity(); 
+    }
+
+    public SwerveModuleState getModuleState() {
+        return new SwerveModuleState(
+            (driveEncoder.getVelocity() / DriveConstants.rpmConversionFactor) * DriveConstants.wheelRadius, 
+            getAbsoluteAngle() 
+        );
     }
 
     
