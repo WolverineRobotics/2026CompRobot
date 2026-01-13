@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 public class Constants {
 
     public static class DriveConstants {
@@ -45,6 +47,14 @@ public class Constants {
         public static final double rpmConversionFactor = (2 * Math.PI) / 60; 
 
         public static final double wheelRadius = 0.1;
+
+        // Module Locations 
+        public static final double xTranslation = Units.inchesToMeters(14);
+        public static final double yTranslation = Units.inchesToMeters(14);
+        public static final double robotRadius = Math.sqrt(
+            xTranslation * xTranslation + 
+            yTranslation * yTranslation
+        ); 
 
     }
     

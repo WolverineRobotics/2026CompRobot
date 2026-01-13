@@ -1,7 +1,12 @@
 package frc.robot.subsystems.swerve;
 
+
+
+import java.util.Vector;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -26,7 +31,7 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveDriveKinematics m_DriveKinematics; 
 
     // Declaring Gyroscope
-    private final Pigeon2 gyro; 
+    private final Pigeon2 gyro;
 
     // Declaring publisher for module states
     private final StructArrayPublisher<SwerveModuleState> moduleStatesPublisher; 
@@ -65,11 +70,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Defining Swerve Kinematics 
         m_DriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(14)), 
-            new Translation2d(Units.inchesToMeters(-14), Units.inchesToMeters(14)), 
-            new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(-14)), 
-            new Translation2d(Units.inchesToMeters(-14), Units.inchesToMeters(-14)) 
-         
+            new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation), 
+            new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), 
+            new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation), 
+            new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation)
         );
 
         // Defining Gyroscope 
@@ -88,8 +92,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
-        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(
-            new ChassisSpeeds(vertical, horizontal, -rotation)
+        SwerveModuleState[] targetStates = getTargetStates(
+            new ChassisSpeeds(vertical, horizontal, rotation)
         ); 
 
         targetStatesPublisher.set(
@@ -124,6 +128,67 @@ public class DriveSubsystem extends SubsystemBase {
 
        SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
        SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
+    }
+
+    private SwerveModuleState[] getTargetStates(ChassisSpeeds targetSpeed) {
+
+        // Calculating the magnetude of the velocity for translation
+        double velocityTranslation = Math.sqrt(
+            targetSpeed.vxMetersPerSecond * targetSpeed.vxMetersPerSecond +
+            targetSpeed.vyMetersPerSecond * targetSpeed.vyMetersPerSecond
+        ); 
+        
+        // Finding the angle of the velocity Vector
+        double thetaTranslation = Math.atan(targetSpeed.vyMetersPerSecond / targetSpeed.vxMetersPerSecond);
+
+        // Applying a correction to get the angle between 0 and 2pi instead of -pi/2 and pi/2
+        if (thetaTranslation < 0) {
+            thetaTranslation += (2 * Math.PI); 
+        } 
+
+        if (targetSpeed.vxMetersPerSecond < 0) {
+            if (targetSpeed.vyMetersPerSecond < 0) {
+                thetaTranslation += (Math.PI); 
+            }
+
+            else {
+                thetaTranslation -= Math.PI; 
+            }
+        }
+
+        double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius) / 4; 
+        double frontLeftTheta = (3 * Math.PI) / 4; 
+        double frontRightTheta = (Math.PI) / 4; 
+        double backLeftTheta = (5 * Math.PI) / 4; 
+        double backRightTheta = (7 * Math.PI) / 4; 
+
+        double frontLeftVelocity = Math.sqrt(
+            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) + 
+            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta))
+        ); 
+
+        double frontRightVelocity = Math.sqrt(
+            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) + 
+            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
+        ); 
+
+        double backLeftVelocity = Math.sqrt(
+            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) + 
+            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
+        ); 
+
+        double backRightVelocity = Math.sqrt(
+            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) + 
+            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
+        ); 
+        
+
+        return new SwerveModuleState[] {
+            new SwerveModuleState(frontLeftVelocity, new Rotation2d(frontLeftTheta)),
+            new SwerveModuleState(frontRightVelocity, new Rotation2d(frontRightTheta)),
+            new SwerveModuleState(backLeftVelocity, new Rotation2d(backLeftTheta)),
+            new SwerveModuleState(backRightVelocity, new Rotation2d(backRightTheta)),
+        };
     }
     
 }
