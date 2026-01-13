@@ -4,6 +4,7 @@ package frc.robot.subsystems.swerve;
 
 import java.util.Vector;
 
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -94,21 +95,22 @@ public class DriveSubsystem extends SubsystemBase {
         // Generating the nessasery modules states for the given speeds
         SwerveModuleState[] targetStates = getTargetStates(
             new ChassisSpeeds(vertical, horizontal, rotation)
-        ); 
+        );
+        
 
         targetStatesPublisher.set(
             new SwerveModuleState[] {
                 targetStates[0], 
                 targetStates[1], 
-                targetStates[2], 
+                targetStates[2],
                 targetStates[3]
             }
         );
         
         // Setting each swerve module to the correct state
         frontLeftModule.setState(targetStates[0]);
-        frontRightModule.setState(targetStates[1]);
-        backLeftModule.setState(targetStates[2]);
+        backLeftModule.setState(targetStates[1]);
+        frontRightModule.setState(targetStates[2]);        
         backRightModule.setState(targetStates[3]);
     }
 
@@ -130,64 +132,64 @@ public class DriveSubsystem extends SubsystemBase {
        SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
     }
 
+    // Found error with wpilib guess this is useless now
     private SwerveModuleState[] getTargetStates(ChassisSpeeds targetSpeed) {
-
-        // Calculating the magnetude of the velocity for translation
-        double velocityTranslation = Math.sqrt(
-            targetSpeed.vxMetersPerSecond * targetSpeed.vxMetersPerSecond +
-            targetSpeed.vyMetersPerSecond * targetSpeed.vyMetersPerSecond
-        ); 
-        
-        // Finding the angle of the velocity Vector
-        double thetaTranslation = Math.atan(targetSpeed.vyMetersPerSecond / targetSpeed.vxMetersPerSecond);
-
-        // Applying a correction to get the angle between 0 and 2pi instead of -pi/2 and pi/2
-        if (thetaTranslation < 0) {
-            thetaTranslation += (2 * Math.PI); 
-        } 
-
-        if (targetSpeed.vxMetersPerSecond < 0) {
-            if (targetSpeed.vyMetersPerSecond < 0) {
-                thetaTranslation += (Math.PI); 
-            }
-
-            else {
-                thetaTranslation -= Math.PI; 
-            }
-        }
-
         double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius) / 4; 
-        double frontLeftTheta = (3 * Math.PI) / 4; 
-        double frontRightTheta = (Math.PI) / 4; 
-        double backLeftTheta = (5 * Math.PI) / 4; 
-        double backRightTheta = (7 * Math.PI) / 4; 
 
-        double frontLeftVelocity = Math.sqrt(
-            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) + 
-            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta))
-        ); 
+        double[] moduleAngles = {
+            (3 * Math.PI) / 4,
+            (Math.PI) / 4,  
+            (5 * Math.PI) / 4,
+            (7 * Math.PI) / 4
+        }; 
 
-        double frontRightVelocity = Math.sqrt(
-            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) + 
-            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
-        ); 
+        double[][] moduleVelocitiesComponents = new double[4][2];
+        double[] moduleVelocities = new double[4];  
 
-        double backLeftVelocity = Math.sqrt(
-            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(frontLeftTheta)) + 
-            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
-        ); 
+        moduleVelocitiesComponents[0][0] = (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(moduleAngles[0])); 
+        moduleVelocitiesComponents[0][1] = (targetSpeed.vyMetersPerSecond + velocityRotation * Math.cos(moduleAngles[0])); 
 
-        double backRightVelocity = Math.sqrt(
-            (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta)) + 
-            (targetSpeed.vyMetersPerSecond  + velocityRotation * Math.cos(frontLeftTheta)) * (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(frontLeftTheta))
-        ); 
+        moduleVelocitiesComponents[1][0] = (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(moduleAngles[1])); 
+        moduleVelocitiesComponents[1][1] = (targetSpeed.vyMetersPerSecond + velocityRotation * Math.sin(moduleAngles[1])); 
+        
+        moduleVelocitiesComponents[2][0] = (targetSpeed.vxMetersPerSecond + velocityRotation * Math.cos(moduleAngles[2])); 
+        moduleVelocitiesComponents[2][1] = (targetSpeed.vyMetersPerSecond + velocityRotation * Math.sin(moduleAngles[2]));
+
+        moduleVelocitiesComponents[3][0] = (targetSpeed.vxMetersPerSecond + velocityRotation * Math.sin(moduleAngles[3])); 
+        moduleVelocitiesComponents[3][1] = (targetSpeed.vyMetersPerSecond + velocityRotation * Math.cos(moduleAngles[3])); 
+
+        for (int i = 0; i < 4; i++) {
+            moduleAngles[i] = Math.atan(moduleVelocitiesComponents[i][1] / moduleVelocitiesComponents[i][0]);
+            moduleVelocities[i] = Math.sqrt(
+                moduleVelocitiesComponents[i][0] * moduleVelocitiesComponents[i][0] + 
+                moduleVelocitiesComponents[i][1] * moduleVelocitiesComponents[i][1] 
+            ); 
+
+            if (moduleAngles[i] < 0) {
+                moduleAngles[i] += (2 * Math.PI); 
+            } 
+
+            if (moduleVelocitiesComponents[i][0] < 0) {
+                if (moduleVelocitiesComponents[i][1] < 0) {
+                    moduleAngles[i] += (Math.PI); 
+                }
+
+                else {
+                    moduleAngles[i] -= Math.PI; 
+
+                }
+            } else if (moduleVelocitiesComponents[i][1] < 0) {
+                
+            }
+
+        }
         
 
         return new SwerveModuleState[] {
-            new SwerveModuleState(frontLeftVelocity, new Rotation2d(frontLeftTheta)),
-            new SwerveModuleState(frontRightVelocity, new Rotation2d(frontRightTheta)),
-            new SwerveModuleState(backLeftVelocity, new Rotation2d(backLeftTheta)),
-            new SwerveModuleState(backRightVelocity, new Rotation2d(backRightTheta)),
+            new SwerveModuleState(moduleVelocities[0], new Rotation2d(moduleAngles[0])),
+            new SwerveModuleState(moduleVelocities[2], new Rotation2d(moduleAngles[1])),
+            new SwerveModuleState(moduleVelocities[1], new Rotation2d(moduleAngles[2])),
+            new SwerveModuleState(moduleVelocities[3], new Rotation2d(moduleAngles[3])),
         };
     }
     
