@@ -7,14 +7,19 @@ import java.util.Vector;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -28,8 +33,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveModule backLeftModule; 
     private final SwerveModule backRightModule; 
 
-    // Declaring Swerve Kinematics Objects 
+    // Declaring Swerve Kinematics and Odometery Objects 
     private final SwerveDriveKinematics m_DriveKinematics; 
+    private final SwerveDriveOdometry m_DriveOdometry; 
 
     // Declaring Gyroscope
     private final Pigeon2 gyro;
@@ -37,6 +43,11 @@ public class DriveSubsystem extends SubsystemBase {
     // Declaring publisher for module states
     private final StructArrayPublisher<SwerveModuleState> moduleStatesPublisher; 
     private final StructArrayPublisher<SwerveModuleState> targetStatesPublisher; 
+
+    // Declaring publisher for Robot Pose 
+    private final StructPublisher<Pose2d> robotPosePublisher; 
+
+    
 
     public DriveSubsystem() {
 
@@ -69,16 +80,27 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.backRightEncoderOffset
         );
 
-        // Defining Swerve Kinematics 
-        m_DriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation), 
-            new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), 
-            new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation), 
-            new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation)
-        );
-
         // Defining Gyroscope 
         gyro = new Pigeon2(DriveConstants.gyroID); 
+
+
+        // Defining Swerve Kinematics and Odometery 
+        m_DriveKinematics = new SwerveDriveKinematics(
+            new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation),  // Front Left
+            new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation), // Back Left 
+            new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), // Front Right 
+            new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation) // Back Right
+        );
+
+        m_DriveOdometry = new SwerveDriveOdometry(m_DriveKinematics, gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(), 
+                backLeftModule.getPosition(), 
+                frontRightModule.getPosition(), 
+                backRightModule.getPosition()
+            }); 
+
+
 
         // Setting default command
         this.setDefaultCommand(new DefaultDriveCommand(this));
@@ -89,13 +111,18 @@ public class DriveSubsystem extends SubsystemBase {
 
         targetStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic(
             "Target States", SwerveModuleState.struct).publish();
+
+        robotPosePublisher = NetworkTableInstance.getDefault().getStructTopic(
+            "Robot Pose", Pose2d.struct).publish(); 
+
+        
     }
 
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
-        SwerveModuleState[] targetStates = getTargetStates(
-            new ChassisSpeeds(vertical, horizontal, rotation)
-        );
+        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
+            ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, rotation, gyro.getRotation2d())
+        ); 
         
 
         targetStatesPublisher.set(
@@ -125,8 +152,24 @@ public class DriveSubsystem extends SubsystemBase {
             frontRightModule.getModuleState(), 
             backLeftModule.getModuleState(), 
             backRightModule.getModuleState()
-        }
-       );
+        }); 
+
+        // Updating the pose info in the odometery 
+        m_DriveOdometry.update(gyro.getRotation2d(), 
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(), 
+            backLeftModule.getPosition(), 
+            frontRightModule.getPosition(), 
+            backRightModule.getPosition()
+        }); 
+
+        // Publishing the current robot pose 
+        robotPosePublisher.set(
+            m_DriveOdometry.getPoseMeters()
+        );
+
+        
+       
 
        SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
        SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
@@ -134,7 +177,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Found error with wpilib guess this is useless now
     private SwerveModuleState[] getTargetStates(ChassisSpeeds targetSpeed) {
-        double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius) / 4; 
+        double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius); 
 
         double[] moduleAngles = {
             (3 * Math.PI) / 4,
