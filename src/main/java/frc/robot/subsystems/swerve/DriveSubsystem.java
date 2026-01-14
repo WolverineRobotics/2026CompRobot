@@ -48,7 +48,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final StructPublisher<Pose2d> robotPosePublisher; 
 
     
-
+    /**
+     * Constructs the Drive subsystem 
+     */
     public DriveSubsystem() {
 
         // Defining Swerve Module objects 
@@ -118,6 +120,13 @@ public class DriveSubsystem extends SubsystemBase {
         
     }
 
+    /**
+     * Sets the swerve modules to the state needed for driving 
+     * 
+     * @param vertical The component of speed away from alliance wall 
+     * @param horizontal The component of speed to the left of the alliance wall
+     * @param rotation The the angular velocity of the robot
+     */
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
@@ -175,7 +184,13 @@ public class DriveSubsystem extends SubsystemBase {
        SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
     }
 
-    // Found error with wpilib guess this is useless now
+    /**
+     * Calculates the module states needed to acheive the target speed 
+     * (Resolved error with wpilib guess this is useless now)
+     * 
+     * @param targetSpeed The speed of the robot try to be acheived as a ChassisSpeeds
+     * @return The swerve module states need to acheive the target speed
+     */
     private SwerveModuleState[] getTargetStates(ChassisSpeeds targetSpeed) {
         double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius); 
 
