@@ -112,6 +112,10 @@ public class SwerveModule {
         return driveEncoder.getVelocity(); 
     }
 
+    public double getDrivePosition() {
+        return driveEncoder.getPosition(); 
+    }
+
     /**
      * Gets the current state of the module
      * 
