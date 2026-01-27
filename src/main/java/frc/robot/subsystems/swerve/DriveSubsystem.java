@@ -125,13 +125,14 @@ public class DriveSubsystem extends SubsystemBase {
      * 
      * @param vertical The component of speed away from alliance wall 
      * @param horizontal The component of speed to the left of the alliance wall
-     * @param rotation The the angular velocity of the robot
+     * @param rotation The the angular velocity of the robot CCW+
      */
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
             ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, rotation, gyro.getRotation2d())
         ); 
+    
         
 
         targetStatesPublisher.set(
@@ -177,11 +178,15 @@ public class DriveSubsystem extends SubsystemBase {
             m_DriveOdometry.getPoseMeters()
         );
 
+        // Publishing the Encoder readings 
+        SmartDashboard.putNumber("Front Left Angle", frontLeftModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber("Front Right Angle", frontRightModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber("Back Left Angle", backLeftModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber("Back Right Angle", backRightModule.getAbsoluteAngle().getDegrees());
+
         
        
-
-       SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
-       SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
+ 
     }
 
     /**
@@ -191,6 +196,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @param targetSpeed The speed of the robot try to be acheived as a ChassisSpeeds
      * @return The swerve module states need to acheive the target speed
      */
+    @Deprecated
     private SwerveModuleState[] getTargetStates(ChassisSpeeds targetSpeed) {
         double velocityRotation = (targetSpeed.omegaRadiansPerSecond * DriveConstants.robotRadius); 
 

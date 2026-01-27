@@ -19,7 +19,7 @@ public class DefaultDriveCommand extends Command {
 
     @Override 
     public void execute() {
-        m_DriveSubsystem.drive(Input.getVertical(), Input.getHorizontal(), Input.getRotation() * 5);
+        m_DriveSubsystem.drive(Input.getVertical(), Input.getHorizontal(), Input.getRotation());
   
     }
 

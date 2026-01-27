@@ -2,7 +2,11 @@ package frc.robot.subsystems.swerve;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +22,8 @@ public class SwerveModule {
     // Declaring the Angle and Drive Motors
     private final SparkMax driveMotor; 
     private final SparkMax angleMotor; 
+    private final SparkMaxConfig driveConfig; 
+    private final SparkMaxConfig angleConfig; 
 
     // Declaring the Encoders 
     private final AnalogEncoder absoluteEncoder; 
@@ -42,7 +48,15 @@ public class SwerveModule {
     public SwerveModule(int driveCANID, int angleMotorCANID, int encoderID, double offset) {
         // Defining motor with their CAN IDs
         driveMotor = new SparkMax(driveCANID, MotorType.kBrushless); 
-        angleMotor = new SparkMax(angleMotorCANID, MotorType.kBrushless); 
+        driveConfig = new SparkMaxConfig(); 
+        driveConfig.idleMode(IdleMode.kCoast);
+        driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
+        
+        
+        angleMotor = new SparkMax(angleMotorCANID, MotorType.kBrushless);
+        angleConfig = new SparkMaxConfig(); 
+        angleConfig.idleMode(IdleMode.kBrake);
+        angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);   
 
         // Defining the absolute encoder with the encoder id
         absoluteEncoder = new AnalogEncoder(encoderID);
@@ -91,7 +105,7 @@ public class SwerveModule {
      * @return The angle reading from the absolute encoder as a Rotation2d. 
      */
     public Rotation2d getAbsoluteAngle() {
-        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get() + encoderOffset));
+        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get() - encoderOffset));
     }
 
     /**
@@ -112,6 +126,11 @@ public class SwerveModule {
         return driveEncoder.getVelocity(); 
     }
 
+    /**
+     * Gets the position of the wheel from the drive encoder
+     * 
+     * @return The position of the wheel in number of rotations
+     */
     public double getDrivePosition() {
         return driveEncoder.getPosition(); 
     }
