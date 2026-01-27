@@ -11,6 +11,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DefaultDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -108,7 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }); 
         
-        setupPathplanner()
+        setupPathplanner();
 
 
 
@@ -162,13 +164,14 @@ public class DriveSubsystem extends SubsystemBase {
      * 
      * @return Pose of the robot as Pose3d 
      */
-    public Pose3d getVisionPose3d() {
-        return LimelightHelpers.getBotPose3d_wpiBlue("limelight"); 
+    public PoseEstimate getVisionPoseEstimate() {
+        LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw().getValueAsDouble(), 0,
+        gyro.getPitch().getValueAsDouble(), 0,
+        gyro.getRoll().getValueAsDouble(), 0);
+
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName()); 
     }
 
-    public Pose2d getVisionPose2d() {
-        return LimelightHelpers.getBotPose2d_wpiBlue("limelight"); 
-    }
 
     /**
      * Method to get the pose of the robot from the encoders + gyro 
@@ -236,7 +239,7 @@ public class DriveSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
         AutoBuilder.configure(
-            this::getVisionPose2d,
+            this::getOdometeryPose,
             this::setPose,
             this::getRobotRelativeSpeeds, 
             (speeds, feedforwards) -> driveRobotOriented(speeds), 
