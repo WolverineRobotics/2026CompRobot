@@ -12,9 +12,9 @@ public class Constants {
         public static final double kDriveD = 0; 
 
         // PIDs for angle motor in swerve modules 
-        public static final double kAngleP = 0; 
-        public static final double kAngleI = 0; 
-        public static final double kAngleD = 0; 
+        public static final double kAngleP = 0.01; 
+        public static final double kAngleI = 0.0; 
+        public static final double kAngleD = 0.0001; 
 
         // CAN IDs for drive motors 
         public static final int frontLeftDriveID = 31; 
@@ -35,10 +35,16 @@ public class Constants {
         public static final int backRightAbsoluteEncoder = 3; 
 
         // Absolute Encoder offsets 
-        public static final double frontLeftEncoderOffset = 0.32;
-        public static final double frontRightEncoderOffset = 0.87;
-        public static final double backLeftEncoderOffset = 0.68;
-        public static final double backRightEncoderOffset = 0.36;
+        public static final double frontLeftEncoderOffset = 95.8;
+        public static final double frontRightEncoderOffset = 306;
+        public static final double backLeftEncoderOffset = 233;
+        public static final double backRightEncoderOffset = 131;
+
+        // Absolute Encoder Inversion
+        public static final boolean frontLeftInverted = true; 
+        public static final boolean frontRightInverted = true; 
+        public static final boolean backLeftInverted = true; 
+        public static final boolean backRightInverted = true; 
 
         // Pigeon2 CAN ID 
         public static final int gyroID = 2; 

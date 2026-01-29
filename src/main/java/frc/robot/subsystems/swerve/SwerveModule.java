@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 
@@ -27,6 +28,7 @@ public class SwerveModule {
 
     // Declaring the Encoders 
     private final AnalogEncoder absoluteEncoder; 
+    private final AnalogInput absoluteEncoderInput;
     private final RelativeEncoder driveEncoder;
     private final RelativeEncoder angleEncoder;
 
@@ -45,7 +47,7 @@ public class SwerveModule {
      * @param encoderID The rio port for the absolute encoder. 
      * @param offset The absolute encoder offset. 
      */
-    public SwerveModule(int driveCANID, int angleMotorCANID, int encoderID, double offset) {
+    public SwerveModule(int driveCANID, int angleMotorCANID, int encoderID, double offset, boolean encoderInverted) {
         // Defining motor with their CAN IDs
         driveMotor = new SparkMax(driveCANID, MotorType.kBrushless); 
         driveConfig = new SparkMaxConfig(); 
@@ -58,8 +60,10 @@ public class SwerveModule {
         angleConfig.idleMode(IdleMode.kBrake);
         angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);   
 
+        absoluteEncoderInput = new AnalogInput(encoderID); 
         // Defining the absolute encoder with the encoder id
-        absoluteEncoder = new AnalogEncoder(encoderID);
+        absoluteEncoder = new AnalogEncoder(absoluteEncoderInput, 360, offset);
+        absoluteEncoder.setInverted(encoderInverted);
 
         // Defining relative encoders from motors         
         driveEncoder = driveMotor.getEncoder(); 
@@ -105,7 +109,7 @@ public class SwerveModule {
      * @return The angle reading from the absolute encoder as a Rotation2d. 
      */
     public Rotation2d getAbsoluteAngle() {
-        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get() - encoderOffset));
+        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get() - 180));
     }
 
     /**
