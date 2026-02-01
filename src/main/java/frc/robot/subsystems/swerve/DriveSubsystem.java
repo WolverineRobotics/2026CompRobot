@@ -12,6 +12,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,6 +48,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Declaring Gyroscope
     private final Pigeon2 gyro;
+
+    // Declaring Pose Estimator 
+    private final SwerveDrivePoseEstimator poseEstimator; 
 
     // Declaring publisher for module states
     private final StructArrayPublisher<SwerveModuleState> moduleStatesPublisher; 
@@ -112,6 +116,18 @@ public class DriveSubsystem extends SubsystemBase {
         
         setupPathplanner();
 
+        poseEstimator = new SwerveDrivePoseEstimator(
+        m_DriveKinematics, 
+        getYaw(),
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(), 
+            backLeftModule.getPosition(), 
+            frontRightModule.getPosition(), 
+            backRightModule.getPosition()
+        }, 
+        new Pose2d() // Initial Pose 
+        ); 
+
 
 
         // Setting default command
@@ -128,6 +144,49 @@ public class DriveSubsystem extends SubsystemBase {
             "Robot Pose", Pose2d.struct).publish(); 
 
         
+    }
+
+    @Override
+    public void periodic() {
+       
+        // Publishing the current modules states 
+        moduleStatesPublisher.set(
+        new SwerveModuleState[] {
+            frontLeftModule.getModuleState(), 
+            frontRightModule.getModuleState(), 
+            backLeftModule.getModuleState(), 
+            backRightModule.getModuleState()
+        }); 
+
+        // Updating the pose info in the odometery 
+        m_DriveOdometry.update(getYaw(), 
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(), 
+            backLeftModule.getPosition(), 
+            frontRightModule.getPosition(), 
+            backRightModule.getPosition()
+        }); 
+
+        // Publishing the current robot pose 
+        robotPosePublisher.set(
+            poseEstimator.getEstimatedPosition()
+        );
+
+        poseEstimator.update(getYaw(),  
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(), 
+            backLeftModule.getPosition(), 
+            frontRightModule.getPosition(), 
+            backRightModule.getPosition()
+        });
+        
+        poseEstimator.addVisionMeasurement(getVisionPoseEstimate().pose, getVisionPoseEstimate().timestampSeconds);
+
+        
+       
+
+       SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
+       SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
     }
 
     /**
@@ -159,10 +218,58 @@ public class DriveSubsystem extends SubsystemBase {
         backRightModule.setState(targetStates[3]);
     }
 
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+        return m_DriveKinematics.toChassisSpeeds(
+            new SwerveModuleState[] {
+                frontLeftModule.getModuleState(), 
+                backLeftModule.getModuleState(),
+                frontRightModule.getModuleState(), 
+                backRightModule.getModuleState()
+            }
+        ); 
+    }
+   
+
+   private void setupPathplanner() {
+        RobotConfig config; 
+        try {
+            config = RobotConfig.fromGUISettings(); 
+            AutoBuilder.configure(
+            this::getOdometeryPose,
+            this::setPose,
+            this::getRobotRelativeSpeeds, 
+            (speeds, feedforwards) -> driveRobotOriented(speeds), 
+            new PPHolonomicDriveController(
+                new PIDConstants(5, 0, 0), 
+                new PIDConstants(5, 0, 0)
+            ),
+            config, 
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this
+        ); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Rotation2d getYaw() {
+        return new Rotation2d(gyro.getYaw().getValue()); 
+    }
+
     /**
-     * Method to get the pose of the robot form the limelight
+     * Method to get the pose estimate of the robot form the limelight
      * 
-     * @return Pose of the robot as Pose3d 
+     * @return Pose estimate of the robot 
      */
     public PoseEstimate getVisionPoseEstimate() {
         LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw().getValueAsDouble(), 0,
@@ -186,80 +293,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_DriveOdometry.resetPose(updatedPose);
     }
 
-    public ChassisSpeeds getRobotRelativeSpeeds() {
-        return m_DriveKinematics.toChassisSpeeds(
-            new SwerveModuleState[] {
-                frontLeftModule.getModuleState(), 
-                backLeftModule.getModuleState(),
-                frontRightModule.getModuleState(), 
-                backRightModule.getModuleState()
-            }
-        ); 
-    }
-
-
-    @Override
-    public void periodic() {
-       
-        // Publishing the current modules states 
-        moduleStatesPublisher.set(
-        new SwerveModuleState[] {
-            frontLeftModule.getModuleState(), 
-            frontRightModule.getModuleState(), 
-            backLeftModule.getModuleState(), 
-            backRightModule.getModuleState()
-        }); 
-
-        // Updating the pose info in the odometery 
-        m_DriveOdometry.update(gyro.getRotation2d(), 
-        new SwerveModulePosition[] {
-            frontLeftModule.getPosition(), 
-            backLeftModule.getPosition(), 
-            frontRightModule.getPosition(), 
-            backRightModule.getPosition()
-        }); 
-
-        // Publishing the current robot pose 
-        robotPosePublisher.set(
-            m_DriveOdometry.getPoseMeters()
-        );
-
+    
         
-       
-
-       SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
-       SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
-    }
-
-   private void setupPathplanner() {
-        RobotConfig config; 
-        try {
-            config = RobotConfig.fromGUISettings(); 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        AutoBuilder.configure(
-            this::getOdometeryPose,
-            this::setPose,
-            this::getRobotRelativeSpeeds, 
-            (speeds, feedforwards) -> driveRobotOriented(speeds), 
-            new PPHolonomicDriveController(
-                new PIDConstants(5, 0, 0), 
-                new PIDConstants(0, 0, 0)
-            ),
-            config, 
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this
-        ); 
-   }
 }

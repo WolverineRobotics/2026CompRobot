@@ -63,6 +63,7 @@ public class SwerveModule {
             DriveConstants.kAngleI,
             DriveConstants.kAngleD
         ); 
+        anglePID.enableContinuousInput(-180, 180);
 
         // Defining encoder offset
         encoderOffset = offset; 
