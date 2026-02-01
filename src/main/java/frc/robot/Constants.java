@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
@@ -15,6 +17,11 @@ public class Constants {
         public static final double kAngleP = 0.1; 
         public static final double kAngleI = 0.01; 
         public static final double kAngleD = 0.01; 
+
+        // PIDs for angle motor in swerve modules 
+        public static final double kHeadingP = 0; 
+        public static final double kHeadingI = 0; 
+        public static final double kHeadingD = 0;
 
         // CAN IDs for drive motors 
         public static final int frontLeftDriveID = 0; 
@@ -55,6 +62,19 @@ public class Constants {
             xTranslation * xTranslation + 
             yTranslation * yTranslation
         ); 
+
+        public static final Pose2d hubPoseBlue = new Pose2d(
+            Units.inchesToMeters(181.56),
+            Units.inchesToMeters(158.50), 
+            new Rotation2d()        
+        ); 
+
+        public static final Pose2d hubPoseRed = new Pose2d(
+            Units.inchesToMeters(650.12 - 181.56),
+            Units.inchesToMeters(158.50), 
+            new Rotation2d()        
+        ); 
+
 
     }
     
