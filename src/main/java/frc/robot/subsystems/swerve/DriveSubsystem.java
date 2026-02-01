@@ -28,7 +28,9 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DefaultDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -158,6 +160,20 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Method to get the pose of the robot form the limelight
+     * 
+     * @return Pose of the robot as Pose3d 
+     */
+    public PoseEstimate getVisionPoseEstimate() {
+        LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw().getValueAsDouble(), 0,
+        gyro.getPitch().getValueAsDouble(), 0,
+        gyro.getRoll().getValueAsDouble(), 0);
+
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName()); 
+    }
+
+
+    /**
      * Method to get the pose of the robot from the encoders + gyro 
      * 
      * @return Pose of the robot as Pose2d
@@ -219,7 +235,10 @@ public class DriveSubsystem extends SubsystemBase {
         RobotConfig config; 
         try {
             config = RobotConfig.fromGUISettings(); 
-            AutoBuilder.configure(
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AutoBuilder.configure(
             this::getOdometeryPose,
             this::setPose,
             this::getRobotRelativeSpeeds, 
@@ -242,9 +261,5 @@ public class DriveSubsystem extends SubsystemBase {
             },
             this
         ); 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
    }
 }
