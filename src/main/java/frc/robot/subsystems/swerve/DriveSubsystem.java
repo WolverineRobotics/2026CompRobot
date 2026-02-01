@@ -32,7 +32,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DefaultDriveCommand;
 
-
 public class DriveSubsystem extends SubsystemBase {
 
     // Declaring Swerve Module objects
@@ -185,7 +184,13 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(
-                ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, rotation, gyro.getRotation2d()));
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        vertical * DriveConstants.maxSpeed,
+                        horizontal * DriveConstants.maxSpeed,
+                        rotation * DriveConstants.maxAngularVelocity,
+                        gyro.getRotation2d()
+                )
+        );
 
         // Setting each swerve module to the correct state
         frontLeftModule.setState(targetStates[0]);
