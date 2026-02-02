@@ -87,6 +87,8 @@ public class Constants {
         public static final double maxSpeed = 1; // m/s 
         public static final double maxAngularVelocity = Math.PI; //rad/s
 
+        public static final double reverseTolerence = 2.5; //degrees
+
 
 
     }
