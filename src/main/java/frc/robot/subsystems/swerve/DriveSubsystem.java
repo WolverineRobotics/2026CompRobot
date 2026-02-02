@@ -64,28 +64,36 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Defining Swerve Module objects
         frontLeftModule = new SwerveModule(
-                DriveConstants.frontLeftDriveID,
-                DriveConstants.frontLeftAngleID,
-                DriveConstants.frontLeftAbsoluteEncoder,
-                DriveConstants.frontLeftEncoderOffset);
+            DriveConstants.frontLeftDriveID, 
+            DriveConstants.frontLeftAngleID,
+            DriveConstants.frontLeftAbsoluteEncoder, 
+            DriveConstants.frontLeftEncoderOffset,
+            DriveConstants.frontLeftInverted
+        );
 
         frontRightModule = new SwerveModule(
-                DriveConstants.frontRightDriveID,
-                DriveConstants.frontRightAngleID,
-                DriveConstants.frontRightAbsoluteEncoder,
-                DriveConstants.frontRightEncoderOffset);
+            DriveConstants.frontRightDriveID, 
+            DriveConstants.frontRightAngleID,
+            DriveConstants.frontRightAbsoluteEncoder, 
+            DriveConstants.frontRightEncoderOffset,
+            DriveConstants.frontRightInverted
+        );
 
         backLeftModule = new SwerveModule(
-                DriveConstants.backLeftDriveID,
-                DriveConstants.backLeftAngleID,
-                DriveConstants.backLeftAbsoluteEncoder,
-                DriveConstants.backLeftEncoderOffset);
+            DriveConstants.backLeftDriveID, 
+            DriveConstants.backLeftAngleID,
+            DriveConstants.backLeftAbsoluteEncoder, 
+            DriveConstants.backLeftEncoderOffset,
+            DriveConstants.backLeftInverted
+        );
 
         backRightModule = new SwerveModule(
-                DriveConstants.backRightDriveID,
-                DriveConstants.backRightAngleID,
-                DriveConstants.backRightAbsoluteEncoder,
-                DriveConstants.backRightEncoderOffset);
+            DriveConstants.backRightDriveID, 
+            DriveConstants.backRightAngleID,
+            DriveConstants.backRightAbsoluteEncoder,
+            DriveConstants.backRightEncoderOffset,
+            DriveConstants.backRightInverted
+        );
 
         // Defining Gyroscope
         gyro = new Pigeon2(DriveConstants.gyroID);
@@ -106,7 +114,39 @@ public class DriveSubsystem extends SubsystemBase {
                         backRightModule.getPosition()
                 });
 
-        setupPathplanner();
+        RobotConfig config;
+        try{
+                config = RobotConfig.fromGUISettings();
+                AutoBuilder.configure(
+                this::getCurrentPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (speeds, feedforwards) -> driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                ),
+                config, // The robot configuration
+                () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+        } catch (Exception e) {
+        // Handle exception as needed
+                e.printStackTrace();
+        }
+
+        // Configure AutoBuilder last
+        
 
         poseEstimator = new SwerveDrivePoseEstimator(
                 m_DriveKinematics,
@@ -179,19 +219,19 @@ public class DriveSubsystem extends SubsystemBase {
      * 
      * @param vertical   The component of speed away from alliance wall
      * @param horizontal The component of speed to the left of the alliance wall
-     * @param rotation   The the angular velocity of the robot
+     * @param rotation The the angular velocity of the robot CCW+
      */
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
-        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        vertical * DriveConstants.maxSpeed,
-                        horizontal * DriveConstants.maxSpeed,
-                        rotation * DriveConstants.maxAngularVelocity,
-                        gyro.getRotation2d()
-                )
-        );
+        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
+            ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, rotation, gyro.getRotation2d())
+        ); 
 
+        SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
+        SmartDashboard.putNumber("BL Target Angle", targetStates[1].angle.getDegrees()); 
+        SmartDashboard.putNumber("FR Target Angle", targetStates[2].angle.getDegrees()); 
+        SmartDashboard.putNumber("BR Target Angle", targetStates[3].angle.getDegrees()); 
+        
         // Setting each swerve module to the correct state
         frontLeftModule.setState(targetStates[0]);
         backLeftModule.setState(targetStates[1]);
@@ -218,39 +258,23 @@ public class DriveSubsystem extends SubsystemBase {
                 });
     }
 
-    private void setupPathplanner() {
-        RobotConfig config;
-        try {
-            config = RobotConfig.fromGUISettings();
-            AutoBuilder.configure(
-                    this::getOdometeryPose,
-                    this::setPose,
-                    this::getRobotRelativeSpeeds,
-                    (speeds, feedforwards) -> driveRobotOriented(speeds),
-                    new PPHolonomicDriveController(
-                            new PIDConstants(5, 0, 0),
-                            new PIDConstants(5, 0, 0)),
-                    config,
-                    () -> {
-                        // Boolean supplier that controls when the path will be mirrored for the red
-                        // alliance
-                        // This will flip the path being followed to the red side of the field.
-                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                        var alliance = DriverStation.getAlliance();
-                        if (alliance.isPresent()) {
-                            return alliance.get() == DriverStation.Alliance.Red;
-                        }
-                        return false;
-                    },
-                    this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+    public void resetPose(Pose2d updatedPose) {
+        m_DriveOdometry.resetPose(updatedPose);
+    }
+
+    public Pose2d getCurrentPose() {
+        return poseEstimator.getEstimatedPosition(); 
     }
 
     public Rotation2d getYaw() {
         return new Rotation2d(gyro.getYaw().getValue());
+    }
+    
+    public void PIDDebugger() {
+        SwerveModuleState targetState = new SwerveModuleState(5, new Rotation2d()); 
+        frontLeftModule.setState(targetState);
     }
 
     /**
@@ -262,12 +286,7 @@ public class DriveSubsystem extends SubsystemBase {
         LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw().getValueAsDouble(), 0,
                 gyro.getPitch().getValueAsDouble(), 0,
                 gyro.getRoll().getValueAsDouble(), 0);
-
         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName());
-    }
-
-    public Pose2d getCurrentPose() {
-        return poseEstimator.getEstimatedPosition();
     }
 
     /**
@@ -279,8 +298,5 @@ public class DriveSubsystem extends SubsystemBase {
         return m_DriveOdometry.getPoseMeters();
     }
 
-    public void setPose(Pose2d updatedPose) {
-        m_DriveOdometry.resetPose(updatedPose);
-    }
 
 }
