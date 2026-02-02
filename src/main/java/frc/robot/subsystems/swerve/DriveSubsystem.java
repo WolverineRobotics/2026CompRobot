@@ -169,7 +169,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void PIDDebugger() {
-        SwerveModuleState targetState = new SwerveModuleState(0, new Rotation2d(Math.PI / 2)); 
+        SwerveModuleState targetState = new SwerveModuleState(5, new Rotation2d()); 
         frontLeftModule.setState(targetState);
     }
 
@@ -247,7 +247,8 @@ public class DriveSubsystem extends SubsystemBase {
        
 
        SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
-       SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity()); 
+       SmartDashboard.putNumber("FL Speed mps", (frontLeftModule.getDriveVelocity() / DriveConstants.rpmConversionFactor) * DriveConstants.wheelRadius);
+       SmartDashboard.putNumber("FL Speed RPM", frontLeftModule.getDriveVelocity());  
     }
 
    private void setupPathplanner() {

@@ -7,9 +7,9 @@ public class Constants {
     public static class DriveConstants {
 
         // PIDs for drive motor in swerve modules 
-        public static final double kDriveP = 0; 
-        public static final double kDriveI = 0; 
-        public static final double kDriveD = 0; 
+        public static final double kDriveP = 0.00025; 
+        public static final double kDriveI = 0.0; 
+        public static final double kDriveD = 0.0000001; 
 
         // PIDs for angle motor in swerve modules 
         public static final double kAngleP = 0.01; 
@@ -50,7 +50,10 @@ public class Constants {
         public static final int gyroID = 2; 
 
         // Conversion factor for radians per second --> rotations per minute
-        public static final double rpmConversionFactor = (2 * Math.PI) / 60; 
+        public static final double rpmConversionFactor = 60 / (2 * Math.PI) ; 
+
+        // Drive PID Scaling Factor 
+        public static final double drivePIDScaling = 1.65289; 
 
         public static final double wheelRadius = Units.inchesToMeters(2);
 

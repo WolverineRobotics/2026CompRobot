@@ -69,6 +69,7 @@ public class SwerveModule {
         driveEncoder = driveMotor.getEncoder(); 
         angleEncoder = angleMotor.getEncoder(); 
 
+
         // Defining PID controllers with values from constants
         drivePID = new PIDController(
             DriveConstants.kDriveP,
@@ -95,7 +96,7 @@ public class SwerveModule {
     public void setState(SwerveModuleState targetState) {
         // Setting the drive and angle motors using PID controllers and the target module state
         driveMotor.set(drivePID.calculate(driveEncoder.getVelocity(), 
-            (targetState.speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor
+            ((targetState.speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor) * DriveConstants.drivePIDScaling
         ));
 
 
