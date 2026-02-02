@@ -11,7 +11,7 @@ public class Input {
     }
 
     public static double getHorizontal() {
-        return driveController.getLeftX() * -1; 
+        return driveController.getLeftX(); 
     }
 
     public static double getRotation() {

@@ -210,8 +210,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         poseEstimator.addVisionMeasurement(getVisionPoseEstimate().pose, getVisionPoseEstimate().timestampSeconds);
 
-        SmartDashboard.putNumber("Current Angle", frontLeftModule.getAbsoluteAngle().getDegrees());
-        SmartDashboard.putNumber("Current Speed", frontLeftModule.getDriveVelocity());
+        SmartDashboard.putNumber(" FL Current ANgle", frontLeftModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber(" FR Current ANgle", frontRightModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber(" BL Current ANgke", backLeftModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber(" BR Current Angle", backRightModule.getAbsoluteAngle().getDegrees());
     }
 
     /**
@@ -224,7 +226,12 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double vertical, double horizontal, double rotation) {
         // Generating the nessasery modules states for the given speeds
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
-            ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, rotation, gyro.getRotation2d())
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                vertical * DriveConstants.maxSpeed,
+                horizontal * DriveConstants.maxSpeed,
+                rotation * DriveConstants.maxAngularVelocity,
+                gyro.getRotation2d()
+            )
         ); 
 
         SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
@@ -234,8 +241,8 @@ public class DriveSubsystem extends SubsystemBase {
         
         // Setting each swerve module to the correct state
         frontLeftModule.setState(targetStates[0]);
-        backLeftModule.setState(targetStates[1]);
-        frontRightModule.setState(targetStates[2]);
+        backLeftModule.setState(targetStates[2]);
+        frontRightModule.setState(targetStates[1]);
         backRightModule.setState(targetStates[3]);
     }
 

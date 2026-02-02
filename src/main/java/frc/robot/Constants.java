@@ -84,7 +84,7 @@ public class Constants {
             new Rotation2d()        
         ); 
 
-        public static final double maxSpeed = 5; // m/s 
+        public static final double maxSpeed = 1; // m/s 
         public static final double maxAngularVelocity = Math.PI; //rad/s
 
 

@@ -101,7 +101,7 @@ public class SwerveModule {
         ));
 
 
-        angleMotor.set(anglePID.calculate(getAbsoluteAngle().getDegrees(), targetState.angle.getDegrees()));
+        angleMotor.set(anglePID.calculate(getAbsoluteAngle().getDegrees(), targetState.angle.getDegrees() * -1));
 
     }
 
