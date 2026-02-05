@@ -95,19 +95,28 @@ public class SwerveModule {
      * @param targetState The final state of the module.  
      */
     public void setState(SwerveModuleState targetState) {
+
+        
         double targetAngle = targetState.angle.getDegrees(); 
         double currentAngle = getAbsoluteAngle().getDegrees(); 
         double targetSpeed = targetState.speedMetersPerSecond; 
 
-        if ( targetAngle >= (currentAngle + 180) - DriveConstants.reverseTolerence && 
-             targetAngle <= (currentAngle + 180) + DriveConstants.reverseTolerence
-           )
+        // transforming the target speed and angle so drive motor reverse instead of angle doing 180 
+        if (currentAngle > 0) {
+            if (inRange(targetAngle, (currentAngle-180)-DriveConstants.reverseTolerence, (currentAngle-180)+DriveConstants.reverseTolerence)) {
+                targetSpeed *= -1;
+                targetAngle = currentAngle; 
+            }
+            
+        }
 
-           {
-            targetAngle = currentAngle; 
-            targetSpeed *= -1; 
+        else {
+            if (inRange(targetAngle, (currentAngle+180)-DriveConstants.reverseTolerence, (currentAngle+180)+DriveConstants.reverseTolerence)) {
+                targetSpeed *= -1;
+                targetAngle = currentAngle; 
+            }
 
-           }
+        }
         
 
         // Setting the drive and angle motors using PID controllers and the target module state
@@ -117,7 +126,11 @@ public class SwerveModule {
 
 
         angleMotor.set(anglePID.calculate(currentAngle, targetAngle * -1));
+        
+    }
 
+    private boolean inRange(double value, double min, double max) {
+        return ((value <= max ) && (value >= min)); 
     }
 
 

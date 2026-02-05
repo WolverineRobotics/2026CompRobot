@@ -7,7 +7,7 @@ public class Input {
     private static final XboxController driveController = new XboxController(0);
 
     public static double getVertical() {
-        return driveController.getLeftY() * -1; 
+        return driveController.getLeftY(); 
     }
 
     public static double getHorizontal() {
