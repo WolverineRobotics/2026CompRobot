@@ -82,7 +82,7 @@ public class SwerveModule {
             DriveConstants.kAngleI,
             DriveConstants.kAngleD
         ); 
-        anglePID.enableContinuousInput(-180, 180);
+        anglePID.enableContinuousInput(-90, 90);
 
         // Defining encoder offset
         encoderOffset = offset; 
@@ -101,21 +101,11 @@ public class SwerveModule {
         double currentAngle = getAbsoluteAngle().getDegrees(); 
         double targetSpeed = targetState.speedMetersPerSecond; 
 
-        // transforming the target speed and angle so drive motor reverse instead of angle doing 180 
-        if (currentAngle > 0) {
-            if (inRange(targetAngle, (currentAngle-180)-DriveConstants.reverseTolerence, (currentAngle-180)+DriveConstants.reverseTolerence)) {
-                targetSpeed *= -1;
-                targetAngle = currentAngle; 
-            }
-            
-        }
+        SmartDashboard.putNumber("Should Reverse", Math.floor(targetAngle / 180) % 2); 
 
-        else {
-            if (inRange(targetAngle, (currentAngle+180)-DriveConstants.reverseTolerence, (currentAngle+180)+DriveConstants.reverseTolerence)) {
-                targetSpeed *= -1;
-                targetAngle = currentAngle; 
-            }
-
+        if (Math.abs(Math.floor(targetAngle / 180) % 2) == 1) {
+            targetSpeed *= -1; 
+            System.out.println("Reversed");
         }
         
 
@@ -127,10 +117,6 @@ public class SwerveModule {
 
         angleMotor.set(anglePID.calculate(currentAngle, targetAngle * -1));
         
-    }
-
-    private boolean inRange(double value, double min, double max) {
-        return ((value <= max ) && (value >= min)); 
     }
 
 
