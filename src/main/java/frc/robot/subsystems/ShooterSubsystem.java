@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
@@ -13,6 +14,7 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     private final SparkMax flywheelMotor; 
     private final SparkMax indexerMotor; 
+    private final DigitalInput indexerSwitch; 
 
     private final RelativeEncoder flywheelEncoder; 
 
@@ -36,6 +38,8 @@ public class ShooterSubsystem  extends SubsystemBase {
             ShooterConstants.flyWheelKi,
             ShooterConstants.flyWheelKd
         ); 
+
+        indexerSwitch = new DigitalInput(ShooterConstants.indexerSwitchID); 
     }
 
     public void setFlyWheelSpeed(double targetSpeed) {
@@ -46,6 +50,15 @@ public class ShooterSubsystem  extends SubsystemBase {
             )
         ); 
     }
+
+    public void spinIndexer() {
+        indexerMotor.set(ShooterConstants.indexerSpeed);
+        if (indexerSwitch.get()) {
+            indexerMotor.stopMotor();
+        }
+    }
+
+
 
 
 }
