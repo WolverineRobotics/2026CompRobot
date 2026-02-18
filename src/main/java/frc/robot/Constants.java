@@ -10,9 +10,5 @@ public class Constants {
         public static final double flyWheelKi = 0; 
         public static final double flyWheelKd = 0; 
 
-        public static final double indexerSpeed = 0.3; 
-
-        public static final int indexerSwitchID = 0; 
-
     }
 }
