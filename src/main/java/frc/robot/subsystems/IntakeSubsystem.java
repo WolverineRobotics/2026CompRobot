@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
         IntakeMotor = new SparkMax(3, MotorType.kBrushless);
         LimitAng = new DigitalInput(0);
 
-        //figuring out the controller code linked to run the intake
+        //figuring out the controller code linked to run the intake e
     }
 
 
