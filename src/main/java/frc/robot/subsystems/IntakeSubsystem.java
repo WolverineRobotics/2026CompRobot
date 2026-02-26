@@ -13,31 +13,47 @@ import edu.wpi.first.wpilibj.XboxController;
 
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final SparkMax rPiviotMotor;
-    private final SparkMax lPiviotMotor;
+    private final SparkMax rPivotMotor;
+    private final SparkMax lPivotMotor;
     private final SparkMax IntakeMotor;
     private final DigitalInput LimitAng; //Limit angle
-    private final SparkMaxConfig rPiviotConfig;
-    private final SparkMaxConfig lPiviotConfig;
+    private final SparkMaxConfig rPivotConfig;
+    private final SparkMaxConfig lPivotConfig;
 
     public IntakeSubsystem() {
-        rPiviotMotor = new SparkMax(0, MotorType.kBrushless);
-        lPiviotMotor = new SparkMax(1, MotorType.kBrushless);
+        rPivotMotor = new SparkMax(0, MotorType.kBrushless);
+        lPivotMotor = new SparkMax(1, MotorType.kBrushless);
         IntakeMotor = new SparkMax(3, MotorType.kBrushless);
         LimitAng = new DigitalInput(0);
 
-        //figuring out the controller code linked to run the intake e
+        /* Move Pivot motors at the same time (up and down)
+         * One motor to get the balls into the hopper
+         * A limit angle (can vary) to not break the pivot motors and the robot itself
+         * Lower intake/raise intake
+         * intake balls
+         * get state
+         */
     }
 
 
-    public void piviotintake() {
+    public void pivotintake() {    //Motors move together
         /* 
         get the rPiviotMotor follow the lPiviotMotor down till the DigitalInput says true in the set angle
 */
-         //where I tried to let the motors move together
-
+      rPivotMotor.set(1);
+      lPivotMotor.set(1);
 
     }
+
+
+    public void intakeMotor(){
+        IntakeMotor.set(1);
+    }
+
+    public void digitalInput(){
+        
+    }
+
 
 }
 
