@@ -10,7 +10,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
-
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax rPivotMotor;
@@ -19,6 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput LimitAng; //Limit angle
     private final SparkMaxConfig rPivotConfig;
     private final SparkMaxConfig lPivotConfig;
+    
 
     public IntakeSubsystem() {
         rPivotMotor = new SparkMax(0, MotorType.kBrushless);
@@ -36,17 +37,24 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 
-    public void pivotintake() {    //Motors move together
+    public void pivotintake() {    //Motors move together, which I need to learn how to do that in the first place
         /* 
         get the rPiviotMotor follow the lPiviotMotor down till the DigitalInput says true in the set angle
 */
       rPivotMotor.set(1);
       lPivotMotor.set(1);
 
+      if (!LimitAng.get()) {
+        rPivotMotor.set(IntakeConstants.intakeSpeed); // this will stop both the Pivot motors when the limit switch gets triggered
+        lPivotMotor.set(IntakeConstants.intakeSpeed);
+      }
+      rPivotMotor.set(0);
+      lPivotMotor.set(0);
+
     }
 
 
-    public void intakeMotor(){
+    public void ingamePiece(){
         IntakeMotor.set(1);
     }
 
