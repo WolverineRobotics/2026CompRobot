@@ -10,5 +10,11 @@ public class Constants {
         public static final double flyWheelKi = 0; 
         public static final double flyWheelKd = 0; 
 
+        // Radians per Second 
+        public static final double defualtFlywheelSpeed = 30; 
+
+        // Motor Percentage
+        public static final double defaultIndexerSpeed = 0.3; 
+
     }
 }
