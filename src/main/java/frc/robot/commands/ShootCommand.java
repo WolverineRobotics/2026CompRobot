@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Input;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -18,9 +19,9 @@ public class ShootCommand extends Command {
 
     @Override 
     public void execute() {
-      m_ShooterSubsystem.setFlyWheelSpeed(ShooterConstants.defualtFlywheelSpeed);
-      
-      if (m_ShooterSubsystem.getFlyWheelVelocity() == ShooterConstants.defualtFlywheelSpeed) {
+      m_ShooterSubsystem.setFlyWheelSpeed(Input.spinFlywheel());
+
+      if (m_ShooterSubsystem.getFlyWheelVelocity() == Input.spinFlywheel()) {
         m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
       }
   
