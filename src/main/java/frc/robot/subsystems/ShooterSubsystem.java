@@ -1,12 +1,16 @@
 package frc.robot.subsystems;
 
 
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
@@ -14,6 +18,8 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     private final SparkMax flywheelMotor; 
     private final SparkMax indexerMotor; 
+
+    private final SparkMaxConfig indexerConfig; 
 
     private final RelativeEncoder flywheelEncoder; 
 
@@ -38,6 +44,10 @@ public class ShooterSubsystem  extends SubsystemBase {
             ShooterConstants.flyWheelKi,
             ShooterConstants.flyWheelKd
         ); 
+
+        indexerConfig = new SparkMaxConfig(); 
+        indexerConfig.smartCurrentLimit(ShooterConstants.indexerCurrentLimit, ShooterConstants.indexerCurrentLimit);
+        indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
     }
 
     public void setFlyWheelSpeed(double targetSpeed) {
@@ -55,6 +65,11 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     public double getFlyWheelVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(flywheelEncoder.getVelocity()); 
+    }
+
+    @Override 
+    public void periodic() {
+        SmartDashboard.putNumber("Flywheel Velocity radps", getFlyWheelVelocity());
     }
 
 

@@ -16,5 +16,7 @@ public class Constants {
         // Motor Percentage
         public static final double defaultIndexerSpeed = 0.3; 
 
+        public static final int indexerCurrentLimit = 30; 
+
     }
 }
