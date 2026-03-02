@@ -11,21 +11,22 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.pivotrlMotors;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax rPivotMotor;
     private final SparkMax lPivotMotor;
     private final SparkMax IntakeMotor;
     private final DigitalInput LimitAng; //Limit angle
-    private final SparkMaxConfig rPivotConfig;
-    private final SparkMaxConfig lPivotConfig;
+    // private  SparkMaxConfig rPivotConfig;  Not used right now I think
+    // private  SparkMaxConfig lPivotConfig;
     
 
     public IntakeSubsystem() {
-        rPivotMotor = new SparkMax(0, MotorType.kBrushless);
-        lPivotMotor = new SparkMax(1, MotorType.kBrushless);
-        IntakeMotor = new SparkMax(3, MotorType.kBrushless);
-        LimitAng = new DigitalInput(0);
+        rPivotMotor = new SparkMax(pivotrlMotors.rpivotMotor, MotorType.kBrushless);
+        lPivotMotor = new SparkMax(pivotrlMotors.lpivotMotor, MotorType.kBrushless);
+        IntakeMotor = new SparkMax(IntakeConstants.intakeMotorCanID, MotorType.kBrushless);
+        LimitAng = new DigitalInput(IntakeConstants.LimitAngID);
 
         /* Move Pivot motors at the same time (up and down)
          * One motor to get the balls into the hopper
@@ -41,12 +42,25 @@ public class IntakeSubsystem extends SubsystemBase {
         /* 
         get the rPiviotMotor follow the lPiviotMotor down till the DigitalInput says true in the set angle
 */
-      rPivotMotor.set(1);
-      lPivotMotor.set(1);
+      rPivotMotor.set(pivotrlMotors.pivotspeed);
+      lPivotMotor.set(pivotrlMotors.pivotspeed);
 
       if (!LimitAng.get()) {
-        rPivotMotor.set(IntakeConstants.intakeSpeed); // this will stop both the Pivot motors when the limit switch gets triggered
-        lPivotMotor.set(IntakeConstants.intakeSpeed);
+        rPivotMotor.set(pivotrlMotors.rpivotMotor); // this will stop both the Pivot motors when the limit switch gets triggered
+        lPivotMotor.set(pivotrlMotors.lpivotMotor); //isn't fully developed yet
+      }
+      rPivotMotor.set(0);
+      lPivotMotor.set(0); //stops both of the motors
+
+    }
+
+    public void pivotout(){ //pivot motors go back into position
+      // need to get some more tests
+
+      //Extra measures
+      if (!LimitAng.get()){
+        rPivotMotor.set(pivotrlMotors.rpivotMotor);
+        lPivotMotor.set(pivotrlMotors.lpivotMotor);
       }
       rPivotMotor.set(0);
       lPivotMotor.set(0);
@@ -54,8 +68,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 
-    public void ingamePiece(){
-        IntakeMotor.set(1);
+    public void ingamePiece(){ //game piece goes in
+        IntakeMotor.set(IntakeConstants.intakeSpeed);
     }
 
     public void digitalInput(){
