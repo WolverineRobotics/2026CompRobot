@@ -38,12 +38,17 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 
-    public void pivotintake() {    //Motors move together, which I need to learn how to do that in the first place
+    public void pivotintake() {  //Intake falls to intaking motion to get the balls
+      //
+      //Motors move together, which I need to learn how to do that in the first place
         /* 
         get the rPiviotMotor follow the lPiviotMotor down till the DigitalInput says true in the set angle
 */
+      
       rPivotMotor.set(pivotrlMotors.pivotspeed);
       lPivotMotor.set(pivotrlMotors.pivotspeed);
+
+// Try to use different digital inputs for work which I'm too sure how yet, 
 
       if (!LimitAng.get()) {
         rPivotMotor.set(pivotrlMotors.rpivotMotor); // this will stop both the Pivot motors when the limit switch gets triggered
@@ -54,8 +59,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
 
-    public void pivotout(){ //pivot motors go back into position
+    public void pivotout(){ //Intake goes back into position in theory
       // need to get some more tests
+
 
       //Extra measures
       if (!LimitAng.get()){
