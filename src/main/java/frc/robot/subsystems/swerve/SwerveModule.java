@@ -105,14 +105,13 @@ public class SwerveModule {
 
         if (Math.abs(Math.floor(targetAngle / 180) % 2) == 1) {
             targetSpeed *= -1; 
-            System.out.println("Reversed");
+
         }
         
 
         // Setting the drive and angle motors using PID controllers and the target module state
         driveMotor.set(drivePID.calculate(driveEncoder.getVelocity(), 
-            ((targetSpeed / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor) * DriveConstants.drivePIDScaling
-        ));
+            ((targetSpeed / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor)));
 
 
         angleMotor.set(anglePID.calculate(currentAngle, targetAngle * -1));

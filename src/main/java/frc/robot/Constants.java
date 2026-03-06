@@ -18,34 +18,38 @@ public class Constants {
         public static final double kAngleI = 0.0; 
         public static final double kAngleD = 0.0001; 
 
-        // PIDs for angle motor in swerve modules 
+        // PIDs for hub alignment command
         public static final double kHeadingP = 0; 
         public static final double kHeadingI = 0; 
         public static final double kHeadingD = 0;
 
         // CAN IDs for drive motors 
-        public static final int frontLeftDriveID = 31; 
-        public static final int frontRightDriveID = 15; 
-        public static final int backLeftDriveID = 14; 
-        public static final int backRightDriveID = 21; 
+        public static final int backLeftDriveID = 15; 
+        public static final int backRightDriveID = 17; 
+        public static final int frontLeftDriveID = 11; 
+        public static final int frontRightDriveID = 13; 
+       
 
         // CAN ID for angle motors
-        public static final int frontLeftAngleID = 23; 
-        public static final int frontRightAngleID = 12; 
-        public static final int backLeftAngleID = 18; 
-        public static final int backRightAngleID = 17; 
+        public static final int frontLeftAngleID = 16; 
+        public static final int frontRightAngleID = 18; 
+        public static final int backLeftAngleID = 12; 
+        public static final int backRightAngleID = 14; 
+       
 
         // Ports of absolute encoders 
-        public static final int frontLeftAbsoluteEncoder = 0; 
-        public static final int frontRightAbsoluteEncoder = 2; 
-        public static final int backLeftAbsoluteEncoder = 1; 
-        public static final int backRightAbsoluteEncoder = 3; 
+        public static final int frontLeftAbsoluteEncoder = 3; 
+        public static final int frontRightAbsoluteEncoder = 1; 
+        public static final int backLeftAbsoluteEncoder = 2; 
+        public static final int backRightAbsoluteEncoder = 0; 
+
+        
 
         // Absolute Encoder offsets 
-        public static final double frontLeftEncoderOffset = 95.8;
-        public static final double frontRightEncoderOffset = 306;
-        public static final double backLeftEncoderOffset = 233;
-        public static final double backRightEncoderOffset = 131;
+        public static final double frontLeftEncoderOffset = 149;
+        public static final double frontRightEncoderOffset = -135;
+        public static final double backLeftEncoderOffset = 67;
+        public static final double backRightEncoderOffset = -138;
 
         // Absolute Encoder Inversion
         public static final boolean frontLeftInverted = true; 
@@ -54,7 +58,7 @@ public class Constants {
         public static final boolean backRightInverted = true; 
 
         // Pigeon2 CAN ID 
-        public static final int gyroID = 2; 
+        public static final int gyroID = 10; 
 
         // Conversion factor for radians per second --> rotations per minute
         public static final double rpmConversionFactor = 60 / (2 * Math.PI) ; 
