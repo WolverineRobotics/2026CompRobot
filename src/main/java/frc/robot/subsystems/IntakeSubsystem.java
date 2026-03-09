@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.pivotrlMotors;
 
+import frc.robot.Input;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax rPivotMotor;
     private final SparkMax lPivotMotor;
@@ -20,6 +23,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput LimitAng; //Limit angle
     // private  SparkMaxConfig rPivotConfig;  Not used right now I think
     // private  SparkMaxConfig lPivotConfig;
+
+
     
 
     public IntakeSubsystem() {
@@ -117,8 +122,38 @@ public class IntakeSubsystem extends SubsystemBase {
     ));
   }
 
+
+
+  //example of where to put safety
+  private boolean atBottomFlag = false;
+  private boolean atTopFlag = false;
+
   @Override
   public void periodic() {
+
+    // if(LimitAng.get()) {
+    //   atBottomFlag = true;
+    // }
+
+    // if(lPivotMotor.getEncoder().getPosition() > 90 && rPivotMotor.getEncoder().getPosition() > 90) {
+    //   atTopFlag = false;
+    // }
+
+    // if(rPivotMotor.getEncoder().getPosition() < 0 && lPivotMotor.getEncoder().getPosition() < 0) {
+    //   atBottomFlag = false;
+    // }
+
+
+    // if(atBottomFlag) {
+    //   rPivotMotor.set(0);
+    //   lPivotMotor.set(0);
+    // }
+
+
+
+    SmartDashboard.putNumber("leftPivotAngle", lPivotMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("rightPivotAngle", rPivotMotor.getEncoder().getPosition());
+    
     
   }
 
