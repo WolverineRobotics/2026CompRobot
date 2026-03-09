@@ -5,16 +5,29 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
+  private final IntakeSubsystem m_IntakeSubsystem; 
+
   public RobotContainer() {
     configureBindings();
+    m_IntakeSubsystem = new IntakeSubsystem(); 
   }
 
   private void configureBindings() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+  
+  public void teleopSequence() {
+    
+    if (Input.startIntaking()) {
+      CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
+    }
   }
 }
