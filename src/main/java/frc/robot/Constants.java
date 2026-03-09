@@ -23,7 +23,6 @@ public class Constants {
         public static final double kHeadingI = 0; 
         public static final double kHeadingD = 0;
 
-<<<<<<< HEAD
         // CAN IDs for drive motors all odd numbers starting from front left 
         public static final int frontLeftDriveID = 11; 
         public static final int frontRightDriveID = 13; 
@@ -35,21 +34,6 @@ public class Constants {
         public static final int frontRightAngleID = 14; 
         public static final int backLeftAngleID = 16; 
         public static final int backRightAngleID = 18; 
-=======
-        // CAN IDs for drive motors 
-        public static final int backLeftDriveID = 15; 
-        public static final int backRightDriveID = 17; 
-        public static final int frontLeftDriveID = 11; 
-        public static final int frontRightDriveID = 13; 
-       
-
-        // CAN ID for angle motors
-        public static final int frontLeftAngleID = 16; 
-        public static final int frontRightAngleID = 18; 
-        public static final int backLeftAngleID = 12; 
-        public static final int backRightAngleID = 14; 
-       
->>>>>>> 8c4f9973e8b2f45011031074caa4106a3a1ac204
 
         // Ports of absolute encoders 
         public static final int frontLeftAbsoluteEncoder = 3; 
