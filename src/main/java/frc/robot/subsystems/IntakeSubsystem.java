@@ -35,6 +35,8 @@ public class IntakeSubsystem extends SubsystemBase {
          * intake balls
          * get state
          */
+
+        setDefaultCommand();
     }
 
 
@@ -82,6 +84,43 @@ public class IntakeSubsystem extends SubsystemBase {
         
     }
 
+
+
+
+// temp raw command
+    public void setIntakeMotor(double speed) {
+        lPivotMotor.set(speed);
+        rPivotMotor.set(speed);
+    }
+
+    public boolean atBottom(){
+        return LimitAng.get();
+    }
+
+    public boolean atTop(){
+        return !LimitAng.get();
+    }
+
+
+  public void setDefaultCommand() {
+    this.setDefaultCommand(new edu.wpi.first.wpilibj2.command.InstantCommand(
+      () -> {
+        if(Input.lowerIntake()) {
+          setIntakeMotor(0.5);
+        } else if (Input.raiseIntake()) {
+          setIntakeMotor(-0.5);
+        } else {
+          setIntakeMotor(0);
+        }
+      },
+      this
+    ));
+  }
+
+  @Override
+  public void periodic() {
+    
+  }
 
 }
 
