@@ -58,6 +58,8 @@ public class DriveSubsystem extends SubsystemBase {
     // Declaring publisher for Robot Pose
     private final StructPublisher<Pose2d> robotPosePublisher;
 
+    private final StructPublisher<Rotation2d> robotHeadingPublisher; 
+
     /**
      * Constructs the Drive subsystem
      */
@@ -168,11 +170,15 @@ public class DriveSubsystem extends SubsystemBase {
         moduleStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic(
                 "Module States", SwerveModuleState.struct).publish();
 
+        robotHeadingPublisher = NetworkTableInstance.getDefault().getStructTopic("Robot Heading", Rotation2d.struct).publish();
+
         targetStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic(
                 "Target States", SwerveModuleState.struct).publish();
 
         robotPosePublisher = NetworkTableInstance.getDefault().getStructTopic(
                 "Robot Pose", Pose2d.struct).publish();
+        
+
 
     }
 
@@ -200,6 +206,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Publishing the current robot pose
         robotPosePublisher.set(
                 poseEstimator.getEstimatedPosition());
+        
+        robotHeadingPublisher.set(gyro.getRotation2d());
 
         poseEstimator.update(getYaw(),
                 new SwerveModulePosition[] {
@@ -234,7 +242,7 @@ public class DriveSubsystem extends SubsystemBase {
                 gyro.getRotation2d()
             )
         ); 
-
+      
         SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
         SmartDashboard.putNumber("BL Target Angle", targetStates[1].angle.getDegrees()); 
         SmartDashboard.putNumber("FR Target Angle", targetStates[2].angle.getDegrees()); 
@@ -281,7 +289,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
     
     public void PIDDebugger() {
-        SwerveModuleState targetState = new SwerveModuleState(5, new Rotation2d()); 
+        SwerveModuleState targetState = new SwerveModuleState(0, new Rotation2d()); 
+        SmartDashboard.putNumber("FL Target Angle", targetState.angle.getDegrees());
         frontLeftModule.setState(targetState);
     }
 

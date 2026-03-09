@@ -82,7 +82,7 @@ public class SwerveModule {
             DriveConstants.kAngleI,
             DriveConstants.kAngleD
         ); 
-        anglePID.enableContinuousInput(-180, 180);
+        anglePID.enableContinuousInput(-90, 90);
 
         // Defining encoder offset
         encoderOffset = offset; 
@@ -95,29 +95,27 @@ public class SwerveModule {
      * @param targetState The final state of the module.  
      */
     public void setState(SwerveModuleState targetState) {
+
+        
         double targetAngle = targetState.angle.getDegrees(); 
         double currentAngle = getAbsoluteAngle().getDegrees(); 
         double targetSpeed = targetState.speedMetersPerSecond; 
 
-        if ( targetAngle >= (currentAngle + 180) - DriveConstants.reverseTolerence && 
-             targetAngle <= (currentAngle + 180) + DriveConstants.reverseTolerence
-           )
+        SmartDashboard.putNumber("Should Reverse", Math.floor(targetAngle / 180) % 2); 
 
-           {
-            targetAngle = currentAngle; 
+        if (Math.abs(Math.floor(targetAngle / 180) % 2) == 1) {
             targetSpeed *= -1; 
 
-           }
+        }
         
 
         // Setting the drive and angle motors using PID controllers and the target module state
         driveMotor.set(drivePID.calculate(driveEncoder.getVelocity(), 
-            ((targetSpeed / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor) * DriveConstants.drivePIDScaling
-        ));
+            ((targetSpeed / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor)));
 
 
         angleMotor.set(anglePID.calculate(currentAngle, targetAngle * -1));
-
+        
     }
 
 
