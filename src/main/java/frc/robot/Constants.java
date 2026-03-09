@@ -12,11 +12,11 @@ public class Constants{
     }
 
     public static class pivotrlMotors{
-        public static final double pivotspeed = 1;//Temp pivot speed
+        public static final double pivotspeed = 2;//Temp pivot speed
 
         //Ids for both pivot motors
-        public static final int lpivotMotor = 1;//Temp pivot motor
-        public static final int rpivotMotor = 2;//Temp pivot motor
+        public static final int lpivotMotor = 21;//Temp pivot motor
+        public static final int rpivotMotor = 22;//Temp pivot motor
 
     } 
 
