@@ -8,6 +8,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -45,8 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry m_DriveOdometry;
 
     // Declaring Gyroscope
-    private final Pigeon2 gyro;
-
+    private final AHRS gyro; 
     // Declaring Pose Estimator
     private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -96,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
         );
 
         // Defining Gyroscope
-        gyro = new Pigeon2(DriveConstants.gyroID);
+        gyro = new AHRS(NavXComType.kMXP_SPI);
 
         // Defining Swerve Kinematics and Odometery
         m_DriveKinematics = new SwerveDriveKinematics(
@@ -276,7 +277,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return new Rotation2d(gyro.getYaw().getValue());
+        return new Rotation2d(gyro.getAngle());
     }
     
     public void PIDDebugger() {
@@ -290,9 +291,9 @@ public class DriveSubsystem extends SubsystemBase {
      * @return Pose estimate of the robot
      */
     public PoseEstimate getVisionPoseEstimate() {
-        LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw().getValueAsDouble(), 0,
-                gyro.getPitch().getValueAsDouble(), 0,
-                gyro.getRoll().getValueAsDouble(), 0);
+        LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw(), 0,
+                gyro.getPitch(), 0,
+                gyro.getRoll(), 0);
         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName());
     }
 
