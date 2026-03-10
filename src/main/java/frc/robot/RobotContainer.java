@@ -26,8 +26,12 @@ public class RobotContainer {
   }
 
   public void teleopSequence() {
-    if (Input.spinFlywheel() != 0) {
+    if (Input.spinFlywheel()) {
       CommandScheduler.getInstance().schedule(new ShootCommand(m_ShooterSubsystem));
+    }
+
+    if (Input.endFlywheel()) {
+      CommandScheduler.getInstance().cancel(new ShootCommand(m_ShooterSubsystem));
     }
   }
 }

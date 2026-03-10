@@ -63,6 +63,10 @@ public class ShooterSubsystem  extends SubsystemBase {
         indexerMotor.set(speed);
     }
 
+    public void spinFlywheel(double speed) {
+        flywheelMotor.set(speed); 
+    }
+
     public double getFlyWheelVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(flywheelEncoder.getVelocity()); 
     }

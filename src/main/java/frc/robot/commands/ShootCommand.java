@@ -19,22 +19,24 @@ public class ShootCommand extends Command {
 
     @Override 
     public void execute() {
-      m_ShooterSubsystem.setFlyWheelSpeed(Input.spinFlywheel());
+      m_ShooterSubsystem.spinFlywheel(ShooterConstants.flywheelSpeed);
 
-      if (m_ShooterSubsystem.getFlyWheelVelocity() == Input.spinFlywheel()) {
-        m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
+      if (m_ShooterSubsystem.getFlyWheelVelocity() <= -400) {
+        m_ShooterSubsystem.spinIndexer(-0.3);
       }
+      
   
     }
 
     @Override
     public void end(boolean interrupted) {
-      
+      m_ShooterSubsystem.spinFlywheel(0);
+      m_ShooterSubsystem.spinIndexer(0);
     }
 
     @Override 
     public boolean isFinished() {
-        return false;
+        return !Input.spinFlywheel();
     }
     
 }
