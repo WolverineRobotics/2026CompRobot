@@ -9,9 +9,9 @@ public class Constants {
     public static class DriveConstants {
 
         // PIDs for drive motor in swerve modules 
-        public static final double kDriveP = 0.00025; 
-        public static final double kDriveI = 0.0; 
-        public static final double kDriveD = 0.0000001; 
+        public static final double kDriveP = 0.00038; 
+        public static final double kDriveI = 0.000121; 
+        public static final double kDriveD = 0.0000003; 
 
         // PIDs for angle motor in swerve modules 
         public static final double kAngleP = 0.01; 
@@ -43,7 +43,11 @@ public class Constants {
         public static final int backLeftAbsoluteEncoder = 2; 
         public static final int backRightAbsoluteEncoder = 0; 
 
-        
+        // Drive motor Inversions
+        public static final boolean frontLeftDriveInverted = true;
+        public static final boolean frontRightDriveInverted = false;
+        public static final boolean backLeftDriveInverted = true;
+        public static final boolean backRightDriveInverted = false;
 
         // Absolute Encoder offsets 
         public static final double frontLeftEncoderOffset = 149;
@@ -88,7 +92,7 @@ public class Constants {
             new Rotation2d()        
         ); 
 
-        public static final double maxSpeed = 1; // m/s 
+        public static final double maxSpeed = 5; // m/s 
         public static final double maxAngularVelocity = Math.PI; //rad/s
 
         public static final double reverseTolerence = 5; //degrees

@@ -47,11 +47,12 @@ public class SwerveModule {
      * @param encoderID The rio port for the absolute encoder. 
      * @param offset The absolute encoder offset. 
      */
-    public SwerveModule(int driveCANID, int angleMotorCANID, int encoderID, double offset, boolean encoderInverted) {
+    public SwerveModule(int driveCANID, int angleMotorCANID, int encoderID, double offset, boolean encoderInverted, boolean driveInverted) {
         // Defining motor with their CAN IDs
         driveMotor = new SparkMax(driveCANID, MotorType.kBrushless); 
         driveConfig = new SparkMaxConfig(); 
         driveConfig.idleMode(IdleMode.kCoast);
+        driveConfig.inverted(driveInverted);
         driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
         
         

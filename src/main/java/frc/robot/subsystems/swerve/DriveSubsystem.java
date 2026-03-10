@@ -72,7 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.frontLeftAngleID,
             DriveConstants.frontLeftAbsoluteEncoder, 
             DriveConstants.frontLeftEncoderOffset,
-            DriveConstants.frontLeftInverted
+            DriveConstants.frontLeftInverted, 
+            DriveConstants.frontLeftDriveInverted
         );
 
         frontRightModule = new SwerveModule(
@@ -80,7 +81,8 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.frontRightAngleID,
             DriveConstants.frontRightAbsoluteEncoder, 
             DriveConstants.frontRightEncoderOffset,
-            DriveConstants.frontRightInverted
+            DriveConstants.frontRightInverted,
+            DriveConstants.frontRightDriveInverted
         );
 
         backLeftModule = new SwerveModule(
@@ -88,7 +90,8 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.backLeftAngleID,
             DriveConstants.backLeftAbsoluteEncoder, 
             DriveConstants.backLeftEncoderOffset,
-            DriveConstants.backLeftInverted
+            DriveConstants.backLeftInverted,
+            DriveConstants.backLeftDriveInverted
         );
 
         backRightModule = new SwerveModule(
@@ -96,10 +99,11 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.backRightAngleID,
             DriveConstants.backRightAbsoluteEncoder,
             DriveConstants.backRightEncoderOffset,
-            DriveConstants.backRightInverted
+            DriveConstants.backRightInverted,
+            DriveConstants.backRightDriveInverted
         );
 
-        // Defining Gyroscope
+        // Defining Gyroscope as NAVX
         gyro = new AHRS(NavXComType.kMXP_UART); 
 
         // Defining Swerve Kinematics and Odometery
@@ -220,10 +224,12 @@ public class DriveSubsystem extends SubsystemBase {
 
         poseEstimator.addVisionMeasurement(getVisionPoseEstimate().pose, getVisionPoseEstimate().timestampSeconds);
 
-        SmartDashboard.putNumber(" FL Current ANgle", frontLeftModule.getAbsoluteAngle().getDegrees());
-        SmartDashboard.putNumber(" FR Current ANgle", frontRightModule.getAbsoluteAngle().getDegrees());
-        SmartDashboard.putNumber(" BL Current ANgke", backLeftModule.getAbsoluteAngle().getDegrees());
-        SmartDashboard.putNumber(" BR Current Angle", backRightModule.getAbsoluteAngle().getDegrees());
+        SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
+        SmartDashboard.putNumber("FR Drive", frontRightModule.getDriveVelocity()); 
+        SmartDashboard.putNumber("BL Drive", backLeftModule.getDriveVelocity()); 
+        SmartDashboard.putNumber("BR Drive", backRightModule.getDriveVelocity()); 
+
+
     }
 
     /**
@@ -245,9 +251,11 @@ public class DriveSubsystem extends SubsystemBase {
         ); 
       
         SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
+        SmartDashboard.putNumber("FL Target Speed",  ((targetStates[0].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         SmartDashboard.putNumber("BL Target Angle", targetStates[1].angle.getDegrees()); 
         SmartDashboard.putNumber("FR Target Angle", targetStates[2].angle.getDegrees()); 
         SmartDashboard.putNumber("BR Target Angle", targetStates[3].angle.getDegrees()); 
+         SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         
         // Setting each swerve module to the correct state
         frontLeftModule.setState(targetStates[0]);
@@ -256,7 +264,7 @@ public class DriveSubsystem extends SubsystemBase {
         backRightModule.setState(targetStates[3]);
     }
 
-    private void driveRobotOriented(ChassisSpeeds speeds) {
+    public void driveRobotOriented(ChassisSpeeds speeds) {
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(speeds);
 
         frontLeftModule.setState(targetStates[0]);
