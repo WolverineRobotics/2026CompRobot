@@ -3,7 +3,7 @@ package frc.robot;
 public class Constants{
     public static class IntakeConstants{
         //Ids for intake + limit
-        public static final int intakeMotorCanID = 1;//Temp motor id
+        public static final int intakeMotorID = 23; 
         public static final int leftPivotID = 21; 
         public static final int rightPivotID = 22; 
 

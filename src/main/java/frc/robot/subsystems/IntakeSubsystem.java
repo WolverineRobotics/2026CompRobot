@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -25,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         rightPivotMotor = new SparkMax(IntakeConstants.rightPivotID, MotorType.kBrushless);
         leftPivotMotor = new SparkMax(IntakeConstants.leftPivotID, MotorType.kBrushless);
-        IntakeMotor = new SparkMax(IntakeConstants.intakeMotorCanID, MotorType.kBrushless);
+        IntakeMotor = new SparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
         leftPivotConfig = new SparkMaxConfig(); 
         leftPivotConfig.follow(rightPivotMotor); 
         leftPivotMotor.configure(leftPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -40,17 +41,22 @@ public class IntakeSubsystem extends SubsystemBase {
       if (atBumpers()) {
         rightPivotMotor.set(0); 
       }
-
+      
     
     }
 
 
-    public void intakeGamepiece(){ //game piece goes in
-        IntakeMotor.set(IntakeConstants.intakeSpeed);
+    public void spinRoller(double speed){ //game piece goes in
+        IntakeMotor.set(speed);
     }
 
     public boolean atBumpers() {
       return (rightPivotMotor.getOutputCurrent() >= IntakeConstants.stressedIntakeCurrentDraw);
+    }
+
+    @Override
+    public void periodic() {
+      SmartDashboard.putNumber("Intake Speed", IntakeMotor.getEncoder().getPosition());
     }
 
 
