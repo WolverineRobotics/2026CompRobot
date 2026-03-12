@@ -109,16 +109,16 @@ public class DriveSubsystem extends SubsystemBase {
         // Defining Swerve Kinematics and Odometery
         m_DriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation), // Front Left
-                new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation), // Back Left
-                new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), // Front Right
+                new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation),
+                new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), // back left
                 new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation) // Back Right
         );
 
         m_DriveOdometry = new SwerveDriveOdometry(m_DriveKinematics, gyro.getRotation2d(),
                 new SwerveModulePosition[] {
                         frontLeftModule.getPosition(),
-                        backLeftModule.getPosition(),
                         frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
                         backRightModule.getPosition()
                 });
 
@@ -161,8 +161,9 @@ public class DriveSubsystem extends SubsystemBase {
                 getYaw(),
                 new SwerveModulePosition[] {
                         frontLeftModule.getPosition(),
-                        backLeftModule.getPosition(),
                         frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
+                       
                         backRightModule.getPosition()
                 },
                 new Pose2d() // Initial Pose
@@ -203,8 +204,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_DriveOdometry.update(getYaw(),
                 new SwerveModulePosition[] {
                         frontLeftModule.getPosition(),
-                        backLeftModule.getPosition(),
                         frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
                         backRightModule.getPosition()
                 });
 
@@ -217,17 +218,19 @@ public class DriveSubsystem extends SubsystemBase {
         poseEstimator.update(getYaw(),
                 new SwerveModulePosition[] {
                         frontLeftModule.getPosition(),
-                        backLeftModule.getPosition(),
                         frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
                         backRightModule.getPosition()
                 });
 
         poseEstimator.addVisionMeasurement(getVisionPoseEstimate().pose, getVisionPoseEstimate().timestampSeconds);
 
-        SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
-        SmartDashboard.putNumber("FR Drive", frontRightModule.getDriveVelocity()); 
-        SmartDashboard.putNumber("BL Drive", backLeftModule.getDriveVelocity()); 
-        SmartDashboard.putNumber("BR Drive", backRightModule.getDriveVelocity()); 
+        SmartDashboard.putNumber("FL Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
+        SmartDashboard.putNumber("FL Speed", frontLeftModule.getDriveVelocity()); 
+        SmartDashboard.putNumber("FR Angle", frontRightModule.getAbsoluteAngle().getDegrees()); 
+        SmartDashboard.putNumber("BL Angle", backLeftModule.getAbsoluteAngle().getDegrees()); 
+        SmartDashboard.putNumber("BR Angle", backRightModule.getAbsoluteAngle().getDegrees()); 
+        SmartDashboard.putNumber("BR Speed", backRightModule.getDriveVelocity()); 
 
 
     }
@@ -249,27 +252,28 @@ public class DriveSubsystem extends SubsystemBase {
                 getYaw()
             )
         ); 
-      
+        
+        targetStatesPublisher.set(targetStates);
         SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
         SmartDashboard.putNumber("FL Target Speed",  ((targetStates[0].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         SmartDashboard.putNumber("BL Target Angle", targetStates[1].angle.getDegrees()); 
         SmartDashboard.putNumber("FR Target Angle", targetStates[2].angle.getDegrees()); 
         SmartDashboard.putNumber("BR Target Angle", targetStates[3].angle.getDegrees()); 
-         SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
+        SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         
         // Setting each swerve module to the correct state
-        frontLeftModule.setState(targetStates[0]);
-        backLeftModule.setState(targetStates[2]);
-        frontRightModule.setState(targetStates[1]);
-        backRightModule.setState(targetStates[3]);
+        frontLeftModule.setState(targetStates[2]);
+        frontRightModule.setState(targetStates[0]);
+        backLeftModule.setState(targetStates[3]);
+        backRightModule.setState(targetStates[1]);
     }
 
     public void driveRobotOriented(ChassisSpeeds speeds) {
         SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(speeds);
 
         frontLeftModule.setState(targetStates[0]);
-        backLeftModule.setState(targetStates[1]);
-        frontRightModule.setState(targetStates[2]);
+        frontRightModule.setState(targetStates[1]);
+        backLeftModule.setState(targetStates[2]);       
         backRightModule.setState(targetStates[3]);
     }
 
@@ -277,8 +281,8 @@ public class DriveSubsystem extends SubsystemBase {
         return m_DriveKinematics.toChassisSpeeds(
                 new SwerveModuleState[] {
                         frontLeftModule.getModuleState(),
-                        backLeftModule.getModuleState(),
                         frontRightModule.getModuleState(),
+                        backLeftModule.getModuleState(),
                         backRightModule.getModuleState()
                 });
     }
@@ -298,7 +302,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     
     public void PIDDebugger() {
-        SwerveModuleState targetState = new SwerveModuleState(0, new Rotation2d()); 
+        SwerveModuleState targetState = new SwerveModuleState(0, new Rotation2d(Math.PI / 2)); 
         SmartDashboard.putNumber("FL Target Angle", targetState.angle.getDegrees());
         frontLeftModule.setState(targetState);
     }
