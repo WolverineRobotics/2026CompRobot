@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.PivotCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
@@ -29,6 +30,10 @@ public class RobotContainer {
     SmartDashboard.putData(CommandScheduler.getInstance());
     if (Input.startIntaking()) {
       CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
+    }
+
+    if (Input.pivotIntake()) {
+      CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
   }
 }

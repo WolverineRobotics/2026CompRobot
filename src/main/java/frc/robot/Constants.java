@@ -12,7 +12,7 @@ public class Constants{
         //Base Intake
         public static final double intakeSpeed = 0.5; //temp 
 
-        public static final double pivotSpeed = 0.3; 
+        public static final double pivotSpeed = -0.3; 
 
     }
 
