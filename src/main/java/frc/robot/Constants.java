@@ -21,4 +21,10 @@ public class Constants {
         public static final double flywheelSpeed = -0.6; 
 
     }
+
+    public static class DriveConstants {
+
+        public static final double maxSpeed = 5; 
+        public static final double maxAngularVelocity = (2 * Math.PI); 
+    }
 }

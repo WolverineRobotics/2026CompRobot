@@ -5,6 +5,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -16,7 +17,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem  extends SubsystemBase {
 
-    private final SparkMax flywheelMotor; 
+    private final SparkFlex flywheelMotor; 
     private final SparkMax indexerMotor; 
 
     private final SparkMaxConfig indexerConfig; 
@@ -27,7 +28,7 @@ public class ShooterSubsystem  extends SubsystemBase {
 
 
     public ShooterSubsystem() {
-        flywheelMotor = new SparkMax(
+        flywheelMotor = new SparkFlex(
             ShooterConstants.flywheelCANID, 
             MotorType.kBrushless
         ); 
