@@ -195,8 +195,8 @@ public class DriveSubsystem extends SubsystemBase {
         moduleStatesPublisher.set(
                 new SwerveModuleState[] {
                         frontLeftModule.getModuleState(),
-                        backLeftModule.getModuleState(),
                         frontRightModule.getModuleState(),
+                        backLeftModule.getModuleState(),
                         backRightModule.getModuleState()
                 });
 
@@ -256,8 +256,10 @@ public class DriveSubsystem extends SubsystemBase {
         targetStatesPublisher.set(targetStates);
         SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
         SmartDashboard.putNumber("FL Target Speed",  ((targetStates[0].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
-        SmartDashboard.putNumber("BL Target Angle", targetStates[1].angle.getDegrees()); 
-        SmartDashboard.putNumber("FR Target Angle", targetStates[2].angle.getDegrees()); 
+        SmartDashboard.putNumber("FR Target Angle", targetStates[1].angle.getDegrees()); 
+        SmartDashboard.putNumber("FR Target Speed",  ((targetStates[1].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
+        SmartDashboard.putNumber("BL Target Angle", targetStates[2].angle.getDegrees()); 
+        SmartDashboard.putNumber("BL Target Speed",  ((targetStates[2].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         SmartDashboard.putNumber("BR Target Angle", targetStates[3].angle.getDegrees()); 
         SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         
