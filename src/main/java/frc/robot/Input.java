@@ -9,5 +9,9 @@ public class Input {
         return opController.getAButton(); 
     }
 
+    public static boolean pivotIntake() {
+        return opController.getRightBumperButton(); 
+    }
+
   
 }

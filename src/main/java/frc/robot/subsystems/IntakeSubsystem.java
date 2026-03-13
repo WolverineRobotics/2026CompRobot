@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -21,15 +22,23 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax leftPivotMotor;
     private final SparkMax IntakeMotor;
     private final SparkMaxConfig leftPivotConfig;
+    private final SparkMaxConfig rightPivotConfig; 
     
 
     public IntakeSubsystem() {
         rightPivotMotor = new SparkMax(IntakeConstants.rightPivotID, MotorType.kBrushless);
         leftPivotMotor = new SparkMax(IntakeConstants.leftPivotID, MotorType.kBrushless);
         IntakeMotor = new SparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
+
         leftPivotConfig = new SparkMaxConfig(); 
+        rightPivotConfig = new SparkMaxConfig(); 
+
         leftPivotConfig.follow(rightPivotMotor); 
+        leftPivotConfig.idleMode(IdleMode.kBrake); 
         leftPivotMotor.configure(leftPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        rightPivotConfig.idleMode(IdleMode.kBrake); 
+        rightPivotMotor.configure(rightPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
        
     }
@@ -57,6 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
       SmartDashboard.putNumber("Intake Speed", IntakeMotor.getEncoder().getPosition());
+      SmartDashboard.putNumber("Pivot Current Draw", rightPivotMotor.getOutputCurrent()); 
     }
 
 

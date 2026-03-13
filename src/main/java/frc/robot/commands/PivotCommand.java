@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import frc.robot.Input;
+
 //Able to lower to intake, Spin the motors, Bring back the intake
 
 import frc.robot.subsystems.IntakeSubsystem;
@@ -30,7 +32,7 @@ public class PivotCommand extends Command {
 
     @Override
     public boolean isFinished(){
-        return m_IntakeSubsystem.atBumpers();
+        return !Input.pivotIntake();
     }
 
 
