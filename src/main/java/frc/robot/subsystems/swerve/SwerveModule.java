@@ -83,7 +83,7 @@ public class SwerveModule {
             DriveConstants.kAngleI,
             DriveConstants.kAngleD
         ); 
-        anglePID.enableContinuousInput(-180, 180);
+        anglePID.enableContinuousInput(0, 360);
 
         // Defining encoder offset
         encoderOffset = offset; 
@@ -126,7 +126,7 @@ public class SwerveModule {
      * @return The angle reading from the absolute encoder as a Rotation2d. 
      */
     public Rotation2d getAbsoluteAngle() {
-        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get() - 180));
+        return new Rotation2d(Units.degreesToRadians(absoluteEncoder.get()));
     }
 
     /**

@@ -195,8 +195,8 @@ public class DriveSubsystem extends SubsystemBase {
         moduleStatesPublisher.set(
                 new SwerveModuleState[] {
                         frontLeftModule.getModuleState(),
-                        frontRightModule.getModuleState(),
                         backLeftModule.getModuleState(),
+                        frontRightModule.getModuleState(),
                         backRightModule.getModuleState()
                 });
 
@@ -262,10 +262,10 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
         
         // Setting each swerve module to the correct state
-        frontLeftModule.setState(targetStates[2]);
-        frontRightModule.setState(targetStates[0]);
-        backLeftModule.setState(targetStates[3]);
-        backRightModule.setState(targetStates[1]);
+        frontLeftModule.setState(targetStates[0]);
+        frontRightModule.setState(targetStates[1]);
+        backLeftModule.setState(targetStates[2]);
+        backRightModule.setState(targetStates[3]);
     }
 
     public void driveRobotOriented(ChassisSpeeds speeds) {
