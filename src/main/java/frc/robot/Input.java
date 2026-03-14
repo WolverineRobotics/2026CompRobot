@@ -32,8 +32,8 @@ public class Input {
         return opController.getAButton(); 
     }
 
-    public static boolean pivotIntake() {
-        return opController.getRightBumperButton(); 
+    public static double pivotIntake() {
+        return opController.getRightY() * 0.1; 
     }
 
   

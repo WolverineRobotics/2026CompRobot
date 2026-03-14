@@ -22,7 +22,7 @@ public class ShootCommand extends Command {
       m_ShooterSubsystem.spinFlywheel(ShooterConstants.flywheelSpeed);
 
       if (m_ShooterSubsystem.getFlyWheelVelocity() <= -400) {
-        m_ShooterSubsystem.spinIndexer(-0.3);
+        m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
       }
       
   

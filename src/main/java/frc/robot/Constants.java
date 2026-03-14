@@ -18,7 +18,7 @@ public class Constants {
         public static final double maxFlywheelSpeed = 30; 
 
         // Motor Percentage
-        public static final double defaultIndexerSpeed = 0.3; 
+        public static final double defaultIndexerSpeed = -0.7; 
 
         public static final int indexerCurrentLimit = 30; 
 
@@ -111,8 +111,8 @@ public class Constants {
             new Rotation2d()        
         ); 
 
-        public static final double maxSpeed = 5 * driveScaling; // m/s 
-        public static final double maxAngularVelocity = 2 * Math.PI; //rad/s
+        public static final double maxSpeed = 10 * driveScaling; // m/s 
+        public static final double maxAngularVelocity = (4 * Math.PI); //rad/s
 
         public static final double reverseTolerence = 5; //degrees
 
@@ -132,6 +132,9 @@ public class Constants {
         public static final double intakeSpeed = 0.5; //temp 
 
         public static final double pivotSpeed = -0.3; 
+
+        public static final boolean leftPivotInverted = false; 
+        public static final boolean rightPivotInverted = false; 
 
     }
 

@@ -33,25 +33,24 @@ public class IntakeSubsystem extends SubsystemBase {
         leftPivotConfig = new SparkMaxConfig(); 
         rightPivotConfig = new SparkMaxConfig(); 
 
-        leftPivotConfig.follow(rightPivotMotor); 
         leftPivotConfig.idleMode(IdleMode.kBrake); 
+        leftPivotConfig.follow(rightPivotMotor, true);
+        leftPivotConfig.inverted(IntakeConstants.leftPivotInverted);
         leftPivotMotor.configure(leftPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         rightPivotConfig.idleMode(IdleMode.kBrake); 
+        rightPivotConfig.inverted(IntakeConstants.rightPivotInverted);
         rightPivotMotor.configure(rightPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
        
     }
 
 
-    public void pivotintake() {    
+    public void pivotintake(double speed) {    
 
-      rightPivotMotor.set(IntakeConstants.pivotSpeed);
-      if (atBumpers()) {
-        rightPivotMotor.set(0); 
-      }
+      rightPivotMotor.set(-speed);
       
-    
+         
     }
 
 

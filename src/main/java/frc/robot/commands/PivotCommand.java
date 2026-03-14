@@ -22,7 +22,7 @@ public class PivotCommand extends Command {
 
     @Override
     public void execute(){
-        m_IntakeSubsystem.pivotintake();
+        m_IntakeSubsystem.pivotintake(Input.pivotIntake());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class PivotCommand extends Command {
 
     @Override
     public boolean isFinished(){
-        return !Input.pivotIntake();
+        return Input.pivotIntake() == 0;
     }
 
 

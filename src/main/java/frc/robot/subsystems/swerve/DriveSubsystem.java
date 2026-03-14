@@ -43,6 +43,11 @@ public class DriveSubsystem extends SubsystemBase {
 
         private final SwerveDriveKinematics kinematics; 
 
+        private final Pigeon2 gyro; 
+
+        private final StructArrayPublisher<SwerveModuleState> modulePublisher; 
+        private final StructArrayPublisher<SwerveModuleState> targetPublisher; 
+
      
 
         public DriveSubsystem() {
@@ -88,23 +93,52 @@ public class DriveSubsystem extends SubsystemBase {
                 );
 
                 this.setDefaultCommand(new DefaultDriveCommand(this));
+
+                gyro = new Pigeon2(DriveConstants.gyroID); 
+
+                modulePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
+                targetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/TargetStates", SwerveModuleState.struct).publish();
+
+                
         
         }
         public void drive(double vertical, double horizontal, double rotation) {
                 SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(
-                        new ChassisSpeeds(
+                        ChassisSpeeds.fromFieldRelativeSpeeds(
                                 vertical * DriveConstants.maxSpeed, 
-                                horizontal * DriveConstants.maxSpeed,
-                                rotation * DriveConstants.maxAngularVelocity
+                                horizontal * DriveConstants.maxSpeed, 
+                                rotation * DriveConstants.maxAngularVelocity, 
+                                gyro.getRotation2d()
                         )
                 ); 
 
-                
+                targetPublisher.set(targetStates);
 
+                
+                SmartDashboard.putNumber("Front Left Target Drive", Units.radiansPerSecondToRotationsPerMinute(targetStates[0].speedMetersPerSecond * DriveConstants.wheelRadius));
                 frontLeftModule.setState(targetStates[0]);
                 frontRightModule.setState(targetStates[1]);
                 backLeftModule.setState(targetStates[2]);
                 backRightModule.setState(targetStates[3]);
+
+
+        }
+
+        @Override 
+        public void periodic() {
+                SmartDashboard.putNumber("Robot Angle", gyro.getYaw().getValueAsDouble());
+
+                modulePublisher.set(
+                        new SwerveModuleState[] {
+                                frontLeftModule.getModuleState(),
+                                frontRightModule.getModuleState(),
+                                backLeftModule.getModuleState(),
+                                backRightModule.getModuleState(),
+                                
+                        }
+                );
+
+                SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
 
 
         }

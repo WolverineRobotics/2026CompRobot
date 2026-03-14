@@ -50,7 +50,7 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
     }
 
-    if (Input.pivotIntake()) {
+    if (Input.pivotIntake() != 0) {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 
