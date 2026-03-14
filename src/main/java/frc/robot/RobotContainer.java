@@ -4,19 +4,26 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class RobotContainer {
 
   private final ShooterSubsystem m_ShooterSubsystem; 
+  private final DriveSubsystem m_DriveSubsystem; 
+
 
   public RobotContainer() {
     m_ShooterSubsystem = new ShooterSubsystem(); 
     configureBindings();
+    m_DriveSubsystem = new DriveSubsystem(); 
+    CommandScheduler.getInstance().run();
   }
 
   private void configureBindings() {}
@@ -33,5 +40,8 @@ public class RobotContainer {
     if (Input.endFlywheel()) {
       CommandScheduler.getInstance().cancel(new ShootCommand(m_ShooterSubsystem));
     }
+
+    SmartDashboard.putData(CommandScheduler.getInstance());
+
   }
 }

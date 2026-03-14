@@ -1,5 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+
 public class Constants {
     public static class ShooterConstants {
 
@@ -21,4 +25,99 @@ public class Constants {
         public static final double flywheelSpeed = -0.6; 
 
     }
+
+    public static class DriveConstants {
+
+        // PIDs for drive motor in swerve modules 
+        public static final double kDriveP = 0.000295; 
+        public static final double kDriveI = 0.00000; 
+        public static final double kDriveD = 0.0000000; 
+
+        public static final double driveScaling = 1.66; 
+
+        // PIDs for angle motor in swerve modules 
+        public static final double kAngleP = 0.01; 
+        public static final double kAngleI = 0.0; 
+        public static final double kAngleD = 0.0001; 
+
+        // PIDs for hub alignment command
+        public static final double kHeadingP = 0; 
+        public static final double kHeadingI = 0; 
+        public static final double kHeadingD = 0;
+
+        // CAN IDs for drive motors 
+        public static final int frontRightDriveID = 11; 
+        public static final int frontLeftDriveID = 13;        
+        public static final int backRightDriveID = 15; 
+        public static final int backLeftDriveID = 17; 
+       
+
+        // CAN ID for angle motors
+        public static final int frontRightAngleID = 12; 
+        public static final int frontLeftAngleID = 14; 
+        public static final int backRightAngleID = 16; 
+        public static final int backLeftAngleID = 18; 
+       
+
+        // Ports of absolute encoders 
+        public static final int frontRightAbsoluteEncoder = 2; 
+        public static final int frontLeftAbsoluteEncoder = 0; 
+        public static final int backRightAbsoluteEncoder = 3; 
+        public static final int backLeftAbsoluteEncoder = 1; 
+
+        // Drive motor Inversions
+        public static final boolean frontRightDriveInverted = true;
+        public static final boolean frontLeftDriveInverted = true;
+        public static final boolean backRightDriveInverted = true;
+        public static final boolean backLeftDriveInverted = true;
+
+        // Absolute Encoder offsets 
+        public static final double frontRightEncoderOffset = -118;
+        public static final double frontLeftEncoderOffset = 42;
+        public static final double backRightEncoderOffset = -29;
+        public static final double backLeftEncoderOffset = 43;
+
+        // Absolute Encoder Inversion
+        public static final boolean frontLeftInverted = true; 
+        public static final boolean frontRightInverted = true; 
+        public static final boolean backLeftInverted = true; 
+        public static final boolean backRightInverted = true; 
+
+        // Pigeon2 CAN ID 
+        public static final int gyroID = 10; 
+
+        // Conversion factor for radians per second --> rotations per minute
+        public static final double rpmConversionFactor = 60 / (2 * Math.PI) ; 
+
+        public static final double wheelRadius = Units.inchesToMeters(2);
+
+        // Module Locations 
+        public static final double xTranslation = Units.inchesToMeters(14);
+        public static final double yTranslation = Units.inchesToMeters(14);
+        public static final double robotRadius = Math.sqrt(
+            xTranslation * xTranslation + 
+            yTranslation * yTranslation
+        ); 
+
+        public static final Pose2d hubPoseBlue = new Pose2d(
+            Units.inchesToMeters(181.56),
+            Units.inchesToMeters(158.50), 
+            new Rotation2d()        
+        ); 
+
+        public static final Pose2d hubPoseRed = new Pose2d(
+            Units.inchesToMeters(650.12 - 181.56),
+            Units.inchesToMeters(158.50), 
+            new Rotation2d()        
+        ); 
+
+        public static final double maxSpeed = 5 * driveScaling; // m/s 
+        public static final double maxAngularVelocity = 2 * Math.PI; //rad/s
+
+        public static final double reverseTolerence = 5; //degrees
+
+
+
+    }
+    
 }
