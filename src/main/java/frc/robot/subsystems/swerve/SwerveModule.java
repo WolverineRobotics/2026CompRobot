@@ -98,7 +98,7 @@ public class SwerveModule {
     public void setState(SwerveModuleState targetState) {
 
         
-        double targetAngle = targetState.angle.getDegrees(); 
+        double targetAngle = -targetState.angle.getDegrees(); 
         double currentAngle = getAbsoluteAngle().getDegrees(); 
         double targetSpeed = targetState.speedMetersPerSecond; 
 

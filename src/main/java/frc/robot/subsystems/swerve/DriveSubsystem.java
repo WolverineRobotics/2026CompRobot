@@ -36,299 +36,78 @@ import frc.robot.commands.DefaultDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
 
-    // Declaring Swerve Module objects
-    private final SwerveModule frontLeftModule;
-    private final SwerveModule frontRightModule;
-    private final SwerveModule backLeftModule;
-    private final SwerveModule backRightModule;
+        private final SwerveModule frontLeftModule; 
+        private final SwerveModule frontRightModule; 
+        private final SwerveModule backLeftModule; 
+        private final SwerveModule backRightModule; 
 
-    // Declaring Swerve Kinematics and Odometery Objects
-    private final SwerveDriveKinematics m_DriveKinematics;
-    private final SwerveDriveOdometry m_DriveOdometry;
+        private final SwerveDriveKinematics kinematics; 
 
-    // Declaring Gyroscope
-    private final AHRS gyro;
+     
 
-    // Declaring Pose Estimator
-    private final SwerveDrivePoseEstimator poseEstimator;
+        public DriveSubsystem() {
+                frontLeftModule = new SwerveModule(
+                        DriveConstants.frontLeftDriveID, 
+                        DriveConstants.frontLeftAngleID,
+                        DriveConstants.frontLeftAbsoluteEncoder, 
+                        DriveConstants.frontLeftEncoderOffset, 
+                        DriveConstants.frontLeftInverted,
+                        DriveConstants.frontLeftDriveInverted
+                );
+                frontRightModule = new SwerveModule(
+                        DriveConstants.frontRightDriveID, 
+                        DriveConstants.frontRightAngleID,
+                        DriveConstants.frontRightAbsoluteEncoder, 
+                        DriveConstants.frontRightEncoderOffset, 
+                        DriveConstants.frontRightInverted,
+                        DriveConstants.frontRightDriveInverted
+                );
+                backLeftModule = new SwerveModule(
+                        DriveConstants.backLeftDriveID, 
+                        DriveConstants.backLeftAngleID,
+                        DriveConstants.backLeftAbsoluteEncoder, 
+                        DriveConstants.backLeftEncoderOffset, 
+                        DriveConstants.backLeftInverted,
+                        DriveConstants.backLeftDriveInverted
+                );
+                backRightModule = new SwerveModule(
+                        DriveConstants.backRightDriveID, 
+                        DriveConstants.backRightAngleID,
+                        DriveConstants.backRightAbsoluteEncoder, 
+                        DriveConstants.backRightEncoderOffset, 
+                        DriveConstants.backRightInverted,
+                        DriveConstants.backRightDriveInverted
+                );
 
-    // Declaring publisher for module states
-    private final StructArrayPublisher<SwerveModuleState> moduleStatesPublisher;
-    private final StructArrayPublisher<SwerveModuleState> targetStatesPublisher;
+                kinematics = new SwerveDriveKinematics(
+                        new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation),
+                        new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation),
+                        new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation),
+                        new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation)
 
-    // Declaring publisher for Robot Pose
-    private final StructPublisher<Pose2d> robotPosePublisher;
+                );
 
-    private final StructPublisher<Rotation2d> robotHeadingPublisher; 
+                this.setDefaultCommand(new DefaultDriveCommand(this));
+        
+        }
+        public void drive(double vertical, double horizontal, double rotation) {
+                SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(
+                        new ChassisSpeeds(
+                                vertical * DriveConstants.maxSpeed, 
+                                horizontal * DriveConstants.maxSpeed,
+                                rotation * DriveConstants.maxAngularVelocity
+                        )
+                ); 
 
-    /**
-     * Constructs the Drive subsystem
-     */
-    public DriveSubsystem() {
+                
 
-        // Defining Swerve Module objects
-        frontLeftModule = new SwerveModule(
-            DriveConstants.frontLeftDriveID, 
-            DriveConstants.frontLeftAngleID,
-            DriveConstants.frontLeftAbsoluteEncoder, 
-            DriveConstants.frontLeftEncoderOffset,
-            DriveConstants.frontLeftInverted, 
-            DriveConstants.frontLeftDriveInverted
-        );
+                frontLeftModule.setState(targetStates[0]);
+                frontRightModule.setState(targetStates[1]);
+                backLeftModule.setState(targetStates[2]);
+                backRightModule.setState(targetStates[3]);
 
-        frontRightModule = new SwerveModule(
-            DriveConstants.frontRightDriveID, 
-            DriveConstants.frontRightAngleID,
-            DriveConstants.frontRightAbsoluteEncoder, 
-            DriveConstants.frontRightEncoderOffset,
-            DriveConstants.frontRightInverted,
-            DriveConstants.frontRightDriveInverted
-        );
 
-        backLeftModule = new SwerveModule(
-            DriveConstants.backLeftDriveID, 
-            DriveConstants.backLeftAngleID,
-            DriveConstants.backLeftAbsoluteEncoder, 
-            DriveConstants.backLeftEncoderOffset,
-            DriveConstants.backLeftInverted,
-            DriveConstants.backLeftDriveInverted
-        );
-
-        backRightModule = new SwerveModule(
-            DriveConstants.backRightDriveID, 
-            DriveConstants.backRightAngleID,
-            DriveConstants.backRightAbsoluteEncoder,
-            DriveConstants.backRightEncoderOffset,
-            DriveConstants.backRightInverted,
-            DriveConstants.backRightDriveInverted
-        );
-
-        // Defining Gyroscope as NAVX
-        gyro = new AHRS(NavXComType.kMXP_UART); 
-
-        // Defining Swerve Kinematics and Odometery
-        m_DriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(DriveConstants.xTranslation, DriveConstants.yTranslation), // Front Left
-                new Translation2d(DriveConstants.xTranslation, -DriveConstants.yTranslation),
-                new Translation2d(-DriveConstants.xTranslation, DriveConstants.yTranslation), // back left
-                new Translation2d(-DriveConstants.xTranslation, -DriveConstants.yTranslation) // Back Right
-        );
-
-        m_DriveOdometry = new SwerveDriveOdometry(m_DriveKinematics, gyro.getRotation2d(),
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                });
-
-        RobotConfig config;
-        try{
-                config = RobotConfig.fromGUISettings();
-                AutoBuilder.configure(
-                this::getCurrentPose, // Robot pose supplier
-                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-                ),
-                config, // The robot configuration
-                () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
-        } catch (Exception e) {
-        // Handle exception as needed
-                e.printStackTrace();
         }
 
-        // Configure AutoBuilder last
-        
-
-        poseEstimator = new SwerveDrivePoseEstimator(
-                m_DriveKinematics,
-                getYaw(),
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                       
-                        backRightModule.getPosition()
-                },
-                new Pose2d() // Initial Pose
-        );
-
-        // Setting default command
-        this.setDefaultCommand(new DefaultDriveCommand(this));
-
-        // Defing module state publisher
-        moduleStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic(
-                "Module States", SwerveModuleState.struct).publish();
-
-        robotHeadingPublisher = NetworkTableInstance.getDefault().getStructTopic("Robot Heading", Rotation2d.struct).publish();
-
-        targetStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic(
-                "Target States", SwerveModuleState.struct).publish();
-
-        robotPosePublisher = NetworkTableInstance.getDefault().getStructTopic(
-                "Robot Pose", Pose2d.struct).publish();
-        
-
-
-    }
-
-    @Override
-    public void periodic() {
-
-        // Publishing the current modules states
-        moduleStatesPublisher.set(
-                new SwerveModuleState[] {
-                        frontLeftModule.getModuleState(),
-                        frontRightModule.getModuleState(),
-                        backLeftModule.getModuleState(),
-                        backRightModule.getModuleState()
-                });
-
-        // Updating the pose info in the odometery
-        m_DriveOdometry.update(getYaw(),
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                });
-
-        // Publishing the current robot pose
-        robotPosePublisher.set(
-                poseEstimator.getEstimatedPosition());
-        
-        robotHeadingPublisher.set(gyro.getRotation2d());
-
-        poseEstimator.update(getYaw(),
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                });
-
-        poseEstimator.addVisionMeasurement(getVisionPoseEstimate().pose, getVisionPoseEstimate().timestampSeconds);
-
-        SmartDashboard.putNumber("FL Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
-        SmartDashboard.putNumber("FL Speed", frontLeftModule.getDriveVelocity()); 
-        SmartDashboard.putNumber("FR Angle", frontRightModule.getAbsoluteAngle().getDegrees()); 
-        SmartDashboard.putNumber("BL Angle", backLeftModule.getAbsoluteAngle().getDegrees()); 
-        SmartDashboard.putNumber("BR Angle", backRightModule.getAbsoluteAngle().getDegrees()); 
-        SmartDashboard.putNumber("BR Speed", backRightModule.getDriveVelocity()); 
-
-
-    }
-
-    /**
-     * Sets the swerve modules to the state needed for driving
-     * 
-     * @param vertical   The component of speed away from alliance wall
-     * @param horizontal The component of speed to the left of the alliance wall
-     * @param rotation The the angular velocity of the robot CCW+
-     */
-    public void drive(double vertical, double horizontal, double rotation) {
-        // Generating the nessasery modules states for the given speeds
-        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates( 
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                vertical * DriveConstants.maxSpeed,
-                horizontal * DriveConstants.maxSpeed,
-                rotation * DriveConstants.maxAngularVelocity,
-                getYaw()
-            )
-        ); 
-        
-        targetStatesPublisher.set(targetStates);
-        SmartDashboard.putNumber("FL Target Angle", targetStates[0].angle.getDegrees()); 
-        SmartDashboard.putNumber("FL Target Speed",  ((targetStates[0].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
-        SmartDashboard.putNumber("FR Target Angle", targetStates[1].angle.getDegrees()); 
-        SmartDashboard.putNumber("FR Target Speed",  ((targetStates[1].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
-        SmartDashboard.putNumber("BL Target Angle", targetStates[2].angle.getDegrees()); 
-        SmartDashboard.putNumber("BL Target Speed",  ((targetStates[2].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
-        SmartDashboard.putNumber("BR Target Angle", targetStates[3].angle.getDegrees()); 
-        SmartDashboard.putNumber("BR Target Speed",  ((targetStates[3].speedMetersPerSecond / DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor));
-        
-        // Setting each swerve module to the correct state
-        frontLeftModule.setState(targetStates[0]);
-        frontRightModule.setState(targetStates[1]);
-        backLeftModule.setState(targetStates[2]);
-        backRightModule.setState(targetStates[3]);
-    }
-
-    public void driveRobotOriented(ChassisSpeeds speeds) {
-        SwerveModuleState[] targetStates = m_DriveKinematics.toSwerveModuleStates(speeds);
-
-        frontLeftModule.setState(targetStates[0]);
-        frontRightModule.setState(targetStates[1]);
-        backLeftModule.setState(targetStates[2]);       
-        backRightModule.setState(targetStates[3]);
-    }
-
-    public ChassisSpeeds getRobotRelativeSpeeds() {
-        return m_DriveKinematics.toChassisSpeeds(
-                new SwerveModuleState[] {
-                        frontLeftModule.getModuleState(),
-                        frontRightModule.getModuleState(),
-                        backLeftModule.getModuleState(),
-                        backRightModule.getModuleState()
-                });
-    }
-
-
-
-    public void resetPose(Pose2d updatedPose) {
-        m_DriveOdometry.resetPose(updatedPose);
-    }
-
-    public Pose2d getCurrentPose() {
-        return poseEstimator.getEstimatedPosition(); 
-    }
-
-    public Rotation2d getYaw() {
-        return new Rotation2d(gyro.getYaw());
-    }
-    
-    public void PIDDebugger() {
-        SwerveModuleState targetState = new SwerveModuleState(0, new Rotation2d(Math.PI / 2)); 
-        SmartDashboard.putNumber("FL Target Angle", targetState.angle.getDegrees());
-        frontLeftModule.setState(targetState);
-    }
-
-    /**
-     * Method to get the pose estimate of the robot form the limelight
-     * 
-     * @return Pose estimate of the robot
-     */
-    public PoseEstimate getVisionPoseEstimate() {
-        LimelightHelpers.SetRobotOrientation(getName(), gyro.getYaw(), 0,
-                gyro.getPitch(), 0,
-                gyro.getRoll(), 0);
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName());
-    }
-
-    /**
-     * Method to get the pose of the robot from the encoders + gyro
-     * 
-     * @return Pose of the robot as Pose2d
-     */
-    public Pose2d getOdometeryPose() {
-        return m_DriveOdometry.getPoseMeters();
-    }
-
-
 }
+
