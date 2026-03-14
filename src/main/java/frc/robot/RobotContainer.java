@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.PivotCommand;
+import frc.robot.subsystems.IntakeSubsystem;
 
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -17,6 +20,7 @@ public class RobotContainer {
 
   private final ShooterSubsystem m_ShooterSubsystem; 
   private final DriveSubsystem m_DriveSubsystem; 
+  private final IntakeSubsystem m_IntakeSubsystem;
 
 
   public RobotContainer() {
@@ -24,6 +28,8 @@ public class RobotContainer {
     configureBindings();
     m_DriveSubsystem = new DriveSubsystem(); 
     CommandScheduler.getInstance().run();
+    m_IntakeSubsystem = new IntakeSubsystem(); 
+
   }
 
   private void configureBindings() {}
@@ -40,8 +46,16 @@ public class RobotContainer {
     if (Input.endFlywheel()) {
       CommandScheduler.getInstance().cancel(new ShootCommand(m_ShooterSubsystem));
     }
+    if (Input.startIntaking()) {
+      CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
+    }
+
+    if (Input.pivotIntake()) {
+      CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
+    }
 
     SmartDashboard.putData(CommandScheduler.getInstance());
 
+  
   }
 }
