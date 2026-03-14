@@ -9,7 +9,7 @@ public class Input {
 
 
     public static boolean spinFlywheel() {
-        return opController.getBButton(); 
+        return opController.getRightBumperButton(); 
     }
 
     public static boolean endFlywheel() {
