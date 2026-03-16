@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.PivotCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -30,6 +33,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().run();
     m_IntakeSubsystem = new IntakeSubsystem(); 
 
+    NamedCommands.registerCommand("Shoot Fuel", new ShootCommand(m_ShooterSubsystem));
+
   }
 
   private void configureBindings() {}
@@ -49,12 +54,17 @@ public class RobotContainer {
     if (Input.startIntaking()) {
       CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
     }
+    if (Input.startOuttaking()) {
+      CommandScheduler.getInstance().schedule(new OuttakeCommand(m_IntakeSubsystem));
+    }
 
     if (Input.pivotIntake() != 0) {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 
     SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putNumber("Input Forward", Input.getVertical());
+    SmartDashboard.putBoolean("Intaking", Input.startIntaking());
 
   
   }

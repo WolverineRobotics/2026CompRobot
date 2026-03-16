@@ -31,7 +31,7 @@ public class Constants {
         // PIDs for drive motor in swerve modules 
         public static final double kDriveP = 0.000295; 
         public static final double kDriveI = 0.00000; 
-        public static final double kDriveD = 0.0000000; 
+        public static final double kDriveD = 0.0000025; 
 
         public static final double driveScaling = 1.66; 
 

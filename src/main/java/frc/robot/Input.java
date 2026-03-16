@@ -7,6 +7,15 @@ public class Input {
     private static final XboxController opController = new XboxController(1); 
     private static final XboxController driveController = new XboxController(0);
 
+    private static double deadband(double input) {
+        if (Math.abs(input) < 0.075) {
+            return 0;
+        }
+        else {
+            return input;
+        }
+    }
+
 
     public static boolean spinFlywheel() {
         return opController.getRightBumperButton(); 
@@ -17,23 +26,27 @@ public class Input {
     }
   
     public static double getVertical() {
-        return driveController.getLeftY(); 
+        return deadband(driveController.getLeftY()); 
     }
 
     public static double getHorizontal() {
-        return driveController.getLeftX(); 
+        return deadband(driveController.getLeftX()); 
     }
 
     public static double getRotation() {
-        return driveController.getRightX(); 
+        return deadband(driveController.getRightX()); 
     }
    
     public static boolean startIntaking() {
         return opController.getAButton(); 
     }
+    public static boolean startOuttaking() {
+        return opController.getBButton(); 
+    }
+
 
     public static double pivotIntake() {
-        return opController.getRightY() * 0.1; 
+        return deadband(opController.getRightY() * 0.1); 
     }
 
   

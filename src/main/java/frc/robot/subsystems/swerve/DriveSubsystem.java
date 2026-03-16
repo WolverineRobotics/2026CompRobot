@@ -42,6 +42,7 @@ public class DriveSubsystem extends SubsystemBase {
         private final SwerveModule backRightModule; 
 
         private final SwerveDriveKinematics kinematics; 
+        private final SwerveDriveOdometry odometry;
 
         private final Pigeon2 gyro; 
 
@@ -92,9 +93,50 @@ public class DriveSubsystem extends SubsystemBase {
 
                 );
 
+                gyro = new Pigeon2(DriveConstants.gyroID); 
+
+                odometry = new SwerveDriveOdometry(
+                        kinematics, 
+                        gyro.getRotation2d(), 
+                        new SwerveModulePosition[] {
+                                frontLeftModule.getPosition(),
+                                frontRightModule.getPosition(),
+                                backLeftModule.getPosition(),
+                                backRightModule.getPosition(),
+                        }
+                );
+
                 this.setDefaultCommand(new DefaultDriveCommand(this));
 
-                gyro = new Pigeon2(DriveConstants.gyroID); 
+                RobotConfig config; 
+                try{
+                        config = RobotConfig.fromGUISettings();
+                        AutoBuilder.configure(
+                        this::getRobotPose, 
+                        this::resetPose,
+                        this::getRobotRelativeSpeeds,
+                        (speeds, feedforwards) -> driveRobotOriented(speeds),
+                        new PPHolonomicDriveController(
+                                new PIDConstants(5, 0, 0), 
+                                new PIDConstants(5, 0, 0)
+                        ),
+                        config,
+                        () -> {
+                                var alliance = DriverStation.getAlliance();
+                                if (alliance.isPresent()) {
+                                        return alliance.get() == DriverStation.Alliance.Red;
+                                }
+                                return false;
+                        },
+                        this
+                );
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                
+
+                
 
                 modulePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
                 targetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/TargetStates", SwerveModuleState.struct).publish();
@@ -112,6 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
                         )
                 ); 
 
+                
+
                 targetPublisher.set(targetStates);
 
                 
@@ -122,6 +166,39 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.setState(targetStates[3]);
 
 
+        }
+        private void driveRobotOriented(ChassisSpeeds targetSpeeds) {
+                SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds); 
+
+                targetPublisher.set(targetStates);
+
+                
+                SmartDashboard.putNumber("Front Left Target Drive", (targetStates[0].speedMetersPerSecond * DriveConstants.wheelRadius) * DriveConstants.rpmConversionFactor);
+                frontLeftModule.setState(targetStates[0]);
+                frontRightModule.setState(targetStates[1]);
+                backLeftModule.setState(targetStates[2]);
+                backRightModule.setState(targetStates[3]);
+
+
+        }
+
+        public Pose2d getRobotPose() {
+                return odometry.getPoseMeters();
+        }
+
+        public ChassisSpeeds getRobotRelativeSpeeds() {
+                return kinematics.toChassisSpeeds(
+                        new SwerveModuleState[] {
+                                frontLeftModule.getModuleState(),
+                                frontRightModule.getModuleState(),
+                                backLeftModule.getModuleState(),
+                                backRightModule.getModuleState(),
+                        }
+                );
+        }
+
+        public void resetPose(Pose2d targetPose) {
+                odometry.resetPose(targetPose);
         }
 
         @Override 
@@ -135,6 +212,16 @@ public class DriveSubsystem extends SubsystemBase {
                                 backLeftModule.getModuleState(),
                                 backRightModule.getModuleState(),
                                 
+                        }
+                );
+
+                odometry.update(
+                        gyro.getRotation2d(),
+                        new SwerveModulePosition[] {
+                            frontLeftModule.getPosition(),
+                            frontRightModule.getPosition(),
+                            backLeftModule.getPosition(),
+                            backRightModule.getPosition(),    
                         }
                 );
 

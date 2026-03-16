@@ -11,6 +11,7 @@ public class ShootCommand extends Command {
 
     public ShootCommand(ShooterSubsystem m_ShooterSubsystem) {
       this.m_ShooterSubsystem = m_ShooterSubsystem; 
+      this.addRequirements(m_ShooterSubsystem);
     }
 
     @Override 

@@ -12,7 +12,8 @@ public class PivotCommand extends Command {
     private final IntakeSubsystem m_IntakeSubsystem;
 
     public PivotCommand(IntakeSubsystem m_IntakeSubsystem) {
-        this.m_IntakeSubsystem = m_IntakeSubsystem; 
+        this.m_IntakeSubsystem = m_IntakeSubsystem;
+        this.addRequirements(m_IntakeSubsystem); 
     }
     
     @Override
