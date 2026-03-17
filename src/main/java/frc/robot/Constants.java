@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 
 public class Constants {
     public static class ShooterConstants {
@@ -10,9 +11,13 @@ public class Constants {
         public static final int flywheelCANID = 31; 
         public static final int indexerCANID = 32; 
 
-        public static final double flyWheelKp = 0; 
-        public static final double flyWheelKi = 0; 
-        public static final double flyWheelKd = 0; 
+        public static final double flyWheelKp = 0.04; 
+        public static final double flyWheelKi = 0.0000; 
+        public static final double flyWheelKd = 0.0000000; 
+
+        public static final double flyWheelKs = 0.1; 
+        public static final double flyWheelKv = 0.01714285714; 
+ 
 
         // Radians per Second 
         public static final double maxFlywheelSpeed = 30; 
@@ -23,6 +28,14 @@ public class Constants {
         public static final int indexerCurrentLimit = 30; 
 
         public static final double flywheelSpeed = -0.6; 
+
+        public static final double hubHeight = Units.inchesToMeters(70); 
+        public static final double shooterAngle = Units.degreesToRadians(55.69); 
+        public static final double flywheelRadius = Units.inchesToMeters(4);
+
+        public static final boolean flywheelInverted = true; 
+        public static final double shootDisplacement = 0.23; 
+        public static final double shooterHeight = Units.inchesToMeters(20);
 
     }
 

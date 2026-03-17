@@ -1,11 +1,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Input {
   
     private static final XboxController opController = new XboxController(1); 
     private static final XboxController driveController = new XboxController(0);
+
+    public static final JoystickButton rightBumper = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
+
 
     private static double deadband(double input) {
         if (Math.abs(input) < 0.075) {

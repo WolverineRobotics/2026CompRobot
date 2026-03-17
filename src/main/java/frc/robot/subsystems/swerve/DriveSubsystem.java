@@ -48,6 +48,11 @@ public class DriveSubsystem extends SubsystemBase {
 
         private final StructArrayPublisher<SwerveModuleState> modulePublisher; 
         private final StructArrayPublisher<SwerveModuleState> targetPublisher; 
+        private final StructPublisher<Pose2d> posePublisher; 
+
+        private double lastYaw; 
+        private double lastPitch; 
+        private double lastRoll; 
 
      
 
@@ -140,6 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
 
                 modulePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
                 targetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/TargetStates", SwerveModuleState.struct).publish();
+                posePublisher = NetworkTableInstance.getDefault().getStructTopic("Bot Pose", Pose2d.struct).publish(); 
+
+                lastYaw = 0; 
+                lastRoll = 0; 
+                lastPitch = 0; 
 
                 
         
@@ -200,9 +210,15 @@ public class DriveSubsystem extends SubsystemBase {
         public void resetPose(Pose2d targetPose) {
                 odometry.resetPose(targetPose);
         }
+        
+        public Pose2d getBotPose() {
+         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose;
+        }
 
         @Override 
         public void periodic() {
+                
+                
                 SmartDashboard.putNumber("Robot Angle", gyro.getYaw().getValueAsDouble());
 
                 modulePublisher.set(
@@ -227,7 +243,26 @@ public class DriveSubsystem extends SubsystemBase {
 
                 SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
 
+                double yawRate = (lastYaw - gyro.getYaw().getValueAsDouble()) / 0.2;
+                double pitchRate = (lastPitch - gyro.getPitch().getValueAsDouble()) / 0.2;
+                double rollRate = (lastRoll - gyro.getRoll().getValueAsDouble()) / 0.2;
+        
+                LimelightHelpers.SetRobotOrientation("limelight", 
+                        gyro.getYaw().getValueAsDouble(), 
+                        yawRate, 
+                        gyro.getPitch().getValueAsDouble(), 
+                        pitchRate,
+                        gyro.getRoll().getValueAsDouble(), 
+                        rollRate
+                );
 
+                posePublisher.set(getBotPose());
+
+                lastYaw = gyro.getYaw().getValueAsDouble(); 
+                lastPitch = gyro.getPitch().getValueAsDouble(); 
+                lastRoll = gyro.getRoll().getValueAsDouble(); 
+
+        
         }
 
 }

@@ -66,6 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
       SmartDashboard.putNumber("Intake Speed", IntakeMotor.getEncoder().getPosition());
       SmartDashboard.putNumber("Pivot Current Draw", rightPivotMotor.getOutputCurrent()); 
+      SmartDashboard.putNumber("Intake Current Draw", IntakeMotor.getOutputCurrent());
     }
 
 

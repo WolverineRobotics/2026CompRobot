@@ -33,11 +33,13 @@ public class RobotContainer {
     CommandScheduler.getInstance().run();
     m_IntakeSubsystem = new IntakeSubsystem(); 
 
-    NamedCommands.registerCommand("Shoot Fuel", new ShootCommand(m_ShooterSubsystem));
+    NamedCommands.registerCommand("Shoot Fuel", new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
 
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    // Input.rightBumper.whileTrue(new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
@@ -45,12 +47,9 @@ public class RobotContainer {
 
   public void teleopSequence() {
     if (Input.spinFlywheel()) {
-      CommandScheduler.getInstance().schedule(new ShootCommand(m_ShooterSubsystem));
+      CommandScheduler.getInstance().schedule(new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
     }
 
-    if (Input.endFlywheel()) {
-      CommandScheduler.getInstance().cancel(new ShootCommand(m_ShooterSubsystem));
-    }
     if (Input.startIntaking()) {
       CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
     }
@@ -62,9 +61,11 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 
+    
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putNumber("Input Forward", Input.getVertical());
     SmartDashboard.putBoolean("Intaking", Input.startIntaking());
+    SmartDashboard.putBoolean("Input Shooting", Input.spinFlywheel());
 
   
   }
