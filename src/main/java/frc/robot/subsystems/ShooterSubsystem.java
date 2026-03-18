@@ -113,9 +113,9 @@ public class ShooterSubsystem  extends SubsystemBase {
         double costheta = Math.cos(ShooterConstants.shooterAngle);
 
         return Math.sqrt(
-          (-9.81 * (range + ShooterConstants.shootDisplacement) * (range + ShooterConstants.shootDisplacement)) / 
-          (2 * costheta * costheta * ((ShooterConstants.hubHeight - ShooterConstants.shooterHeight) - (range * tantheta))
-        )) / ShooterConstants.flywheelRadius;
+        (9.81 * range * range) /
+        (2 * costheta * costheta * (ShooterConstants.hubHeight - (range * tantheta)))
+        ) / ShooterConstants.flywheelRadius;
     }
 
     @Override 
