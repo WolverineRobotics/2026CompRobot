@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -122,6 +123,9 @@ public class ShooterSubsystem  extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Flywheel Velocity radps", getFlyWheelVelocity());
     }
+
+    private static final GenericEntry testableRPM = 
+        Shuffleboard.getTab("Tuning").add("RPM", 0).getEntry();
 
 
 }
