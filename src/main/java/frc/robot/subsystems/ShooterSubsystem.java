@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -35,32 +36,35 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     private final PIDController flywheelPIDController; 
     private final SimpleMotorFeedforward flywheelFeedforward; 
-
-
-    public ShooterSubsystem() {
-        flywheelMotor = new SparkFlex(
-            ShooterConstants.flywheelCANID, 
-            MotorType.kBrushless
-        ); 
-
-        indexerMotor = new SparkMax(
-            ShooterConstants.indexerCANID, 
-            MotorType.kBrushless
-        ); 
-
-        flywheelEncoder = flywheelMotor.getEncoder(); 
-        
-
-        flywheelPIDController = new PIDController(
-            ShooterConstants.flyWheelKp, 
-            ShooterConstants.flyWheelKi,
-            ShooterConstants.flyWheelKd
-        ); 
-
-        flywheelFeedforward = new SimpleMotorFeedforward(
-            ShooterConstants.flyWheelKs,
-            ShooterConstants.flyWheelKv     
-        );
+    private final GenericEntry testableRPM; 
+    
+    
+        public ShooterSubsystem() {
+            flywheelMotor = new SparkFlex(
+                ShooterConstants.flywheelCANID, 
+                MotorType.kBrushless
+            ); 
+    
+            indexerMotor = new SparkMax(
+                ShooterConstants.indexerCANID, 
+                MotorType.kBrushless
+            ); 
+    
+            flywheelEncoder = flywheelMotor.getEncoder(); 
+            
+    
+            flywheelPIDController = new PIDController(
+                ShooterConstants.flyWheelKp, 
+                ShooterConstants.flyWheelKi,
+                ShooterConstants.flyWheelKd
+            ); 
+    
+            flywheelFeedforward = new SimpleMotorFeedforward(
+                ShooterConstants.flyWheelKs,
+                ShooterConstants.flyWheelKv     
+            );
+    
+            testableRPM = Shuffleboard.getTab("Tuning").add("RPM", 0).getEntry();
 
         indexerConfig = new SparkMaxConfig(); 
         indexerConfig.smartCurrentLimit(ShooterConstants.indexerCurrentLimit, ShooterConstants.indexerCurrentLimit);
@@ -125,8 +129,13 @@ public class ShooterSubsystem  extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Velocity RPM", Units.radiansPerSecondToRotationsPerMinute(getFlyWheelVelocity()));
     }
 
-    private static final GenericEntry testableRPM = 
-        Shuffleboard.getTab("Tuning").add("RPM", 0).getEntry();
+    public double getTestSpeed() {
+        return testableRPM.getDouble(0); 
+    }
+
+
+
+
 
 
 }

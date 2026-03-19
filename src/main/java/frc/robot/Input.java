@@ -9,7 +9,7 @@ public class Input {
     private static final XboxController opController = new XboxController(1); 
     private static final XboxController driveController = new XboxController(0);
 
-    public static final JoystickButton rightBumper = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
+    public static final JoystickButton xButton = new JoystickButton(opController, XboxController.Button.kX.value);
 
 
     private static double deadband(double input) {
@@ -25,11 +25,7 @@ public class Input {
     public static boolean spinFlywheel() {
         return opController.getRightBumperButton(); 
     }
-
-    public static boolean endFlywheel() {
-        return opController.getBButtonReleased();
-    }
-  
+ 
     public static double getVertical() {
         return deadband(driveController.getLeftY()); 
     }
@@ -47,6 +43,10 @@ public class Input {
     }
     public static boolean startOuttaking() {
         return opController.getBButton(); 
+    }
+
+    public static boolean testShooter() {
+        return opController.getXButton(); 
     }
 
 

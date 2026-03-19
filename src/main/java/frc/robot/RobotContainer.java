@@ -43,6 +43,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Input.rightBumper.whileTrue(new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
+    Input.xButton.whileTrue(new ShootConstantCommand(m_ShooterSubsystem, m_ShooterSubsystem.getTestSpeed())); 
   }
 
   public Command getAutonomousCommand() {
@@ -65,6 +66,7 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 
+   
     
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putNumber("Input Forward", Input.getVertical());
