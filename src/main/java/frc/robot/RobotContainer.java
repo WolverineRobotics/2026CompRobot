@@ -66,6 +66,9 @@ public class RobotContainer {
     if (Input.pivotIntake()) {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
+    if (Input.testShooter()) {
+      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, m_ShooterSubsystem.getTestSpeed()));
+    }
 
    
     

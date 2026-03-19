@@ -69,7 +69,7 @@ public class ShootConstantCommand extends Command {
 
     @Override 
     public boolean isFinished() {
-        return !Input.spinFlywheel() || finishTimer.get() > 0.75;
+        return !Input.spinFlywheel() || finishTimer.get() > 5;
     }
     
 }

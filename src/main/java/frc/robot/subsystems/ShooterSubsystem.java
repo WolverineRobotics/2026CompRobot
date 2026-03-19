@@ -127,10 +127,11 @@ public class ShooterSubsystem  extends SubsystemBase {
     @Override 
     public void periodic() {
         SmartDashboard.putNumber("Flywheel Velocity RPM", Units.radiansPerSecondToRotationsPerMinute(getFlyWheelVelocity()));
+        SmartDashboard.putNumber("Flywheel Current Output", flywheelMotor.getOutputCurrent()); 
     }
 
     public double getTestSpeed() {
-        return testableRPM.getDouble(0); 
+        return Units.rotationsPerMinuteToRadiansPerSecond(testableRPM.getDouble(0)); 
     }
 
 
