@@ -50,8 +50,8 @@ public class Input {
     }
 
 
-    public static double pivotIntake() {
-        return deadband(opController.getRightY() * 0.1); 
+    public static boolean pivotIntake() {
+        return opController.getLeftBumperButton(); 
     }
 
   

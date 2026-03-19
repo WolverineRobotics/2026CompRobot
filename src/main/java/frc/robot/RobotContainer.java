@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,7 +16,9 @@ import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.PivotCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
-import frc.robot.commands.ShootCommand;
+
+import frc.robot.commands.ShootConstantCommand;
+import frc.robot.commands.ShootVariableCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
@@ -33,7 +36,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().run();
     m_IntakeSubsystem = new IntakeSubsystem(); 
 
-    NamedCommands.registerCommand("Shoot Fuel", new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
+    NamedCommands.registerCommand("Shoot Fuel", new ShootConstantCommand(m_ShooterSubsystem, 0));
+    NamedCommands.registerCommand("Pivot Intake", new PivotCommand(m_IntakeSubsystem));
 
   }
 
@@ -42,12 +46,12 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return new PathPlannerAuto("Test Auto");
   }
 
   public void teleopSequence() {
     if (Input.spinFlywheel()) {
-      CommandScheduler.getInstance().schedule(new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
+      CommandScheduler.getInstance().schedule(new ShootVariableCommand(m_ShooterSubsystem, m_DriveSubsystem));
     }
 
     if (Input.startIntaking()) {
@@ -57,7 +61,7 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new OuttakeCommand(m_IntakeSubsystem));
     }
 
-    if (Input.pivotIntake() != 0) {
+    if (Input.pivotIntake()) {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 

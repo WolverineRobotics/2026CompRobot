@@ -7,6 +7,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -24,7 +25,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem  extends SubsystemBase {
 
-    private final SparkMax flywheelMotor; 
+    private final SparkFlex flywheelMotor; 
     private final SparkMax indexerMotor; 
 
     private final SparkMaxConfig indexerConfig; 
@@ -37,7 +38,7 @@ public class ShooterSubsystem  extends SubsystemBase {
 
 
     public ShooterSubsystem() {
-        flywheelMotor = new SparkMax(
+        flywheelMotor = new SparkFlex(
             ShooterConstants.flywheelCANID, 
             MotorType.kBrushless
         ); 
@@ -114,14 +115,14 @@ public class ShooterSubsystem  extends SubsystemBase {
         double costheta = Math.cos(ShooterConstants.shooterAngle);
 
         return Math.sqrt(
-        (9.81 * range * range) /
-        (2 * costheta * costheta * (ShooterConstants.hubHeight - (range * tantheta)))
-        ) / ShooterConstants.flywheelRadius;
+          (-9.81 * range * range) / 
+          (2 * costheta * costheta * ((ShooterConstants.hubHeight - ShooterConstants.shooterHeight) - (range * tantheta))
+        )) / ShooterConstants.flywheelRadius;
     }
 
     @Override 
     public void periodic() {
-        SmartDashboard.putNumber("Flywheel Velocity radps", getFlyWheelVelocity());
+        SmartDashboard.putNumber("Flywheel Velocity RPM", Units.radiansPerSecondToRotationsPerMinute(getFlyWheelVelocity()));
     }
 
     private static final GenericEntry testableRPM = 
