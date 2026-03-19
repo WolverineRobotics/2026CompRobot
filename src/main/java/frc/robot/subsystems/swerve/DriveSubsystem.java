@@ -254,7 +254,8 @@ public class DriveSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
                 SmartDashboard.putNumber("Robot Angle", gyro.getRotation2d().getDegrees());
                 
-                SmartDashboard.putBoolean("In Shooting Range", inShootingRange()); 
+                SmartDashboard.putBoolean("In Shooting Range", inShootingRange());
+                SmartDashboard.putNumber("Distance", getHubDistance(true)); 
 
                 double yawRate = (lastYaw - gyro.getYaw().getValueAsDouble()) / 0.2;
                 double pitchRate = (lastPitch - gyro.getPitch().getValueAsDouble()) / 0.2;

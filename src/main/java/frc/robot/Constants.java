@@ -27,7 +27,7 @@ public class Constants {
 
         public static final int indexerCurrentLimit = 30; 
 
-        public static final double flywheelSpeed = -0.6; 
+        public static final double flywheelSpeed = 750; 
 
         public static final double hubHeight = Units.inchesToMeters(70); 
         public static final double shooterAngle = Units.degreesToRadians(60); 
