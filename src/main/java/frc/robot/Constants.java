@@ -129,6 +129,9 @@ public class Constants {
 
         public static final double reverseTolerence = 5; //degrees
 
+        public static final double maxShootingDistance = 1; 
+        public static final double minShootingDistance = 0; 
+
 
 
     }
