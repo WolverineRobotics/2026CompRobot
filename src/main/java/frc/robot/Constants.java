@@ -11,7 +11,7 @@ public class Constants {
         public static final int flywheelCANID = 31; 
         public static final int indexerCANID = 32; 
 
-        public static final double flyWheelKp = 0.04; 
+        public static final double flyWheelKp = 0.0; 
         public static final double flyWheelKi = 0.0000; 
         public static final double flyWheelKd = 0.0000000; 
 
@@ -30,7 +30,7 @@ public class Constants {
         public static final double flywheelSpeed = -0.6; 
 
         public static final double hubHeight = Units.inchesToMeters(70); 
-        public static final double shooterAngle = Units.degreesToRadians(55.69); 
+        public static final double shooterAngle = Units.degreesToRadians(60); 
         public static final double flywheelRadius = Units.inchesToMeters(4);
 
         public static final boolean flywheelInverted = true; 
@@ -139,7 +139,7 @@ public class Constants {
         public static final int leftPivotID = 21; 
         public static final int rightPivotID = 22; 
 
-        public static final double stressedIntakeCurrentDraw = 60; 
+        public static final double stressedIntakeCurrentDraw = 22; 
 
         //Base Intake
         public static final double intakeSpeed = 0.5; //temp 

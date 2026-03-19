@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,23 +16,28 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
-public class ShootCommand extends Command {
+public class ShootVariableCommand extends Command {
 
     private final ShooterSubsystem m_ShooterSubsystem; 
     private final DriveSubsystem m_DriveSubsystem;
     private double distance; 
     private double targetAngularVelocity; 
+    private final StructPublisher<Pose2d> hubPosePublisher; 
+    private Pose2d hubPose;
 
-    public ShootCommand(ShooterSubsystem m_ShooterSubsystem, DriveSubsystem m_DriveSubsystem) {
+    public ShootVariableCommand(ShooterSubsystem m_ShooterSubsystem, DriveSubsystem m_DriveSubsystem) {
       this.m_ShooterSubsystem = m_ShooterSubsystem; 
       this.m_DriveSubsystem = m_DriveSubsystem; 
       distance = 0; 
       targetAngularVelocity = 0; 
+      hubPose = new Pose2d();
+
+      hubPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Hub Pose", Pose2d.struct).publish();
     }
 
     @Override 
     public void initialize() {
-      Pose2d hubPose = new Pose2d(); 
+      hubPose = new Pose2d(); 
       Pose2d botPose = m_DriveSubsystem.getBotPose(); 
 
       Optional<Alliance> ally = DriverStation.getAlliance();
@@ -43,15 +50,16 @@ public class ShootCommand extends Command {
           }
       }
       else {
-          hubPose = DriveConstants.hubPoseBlue; 
+          hubPose = DriveConstants.hubPoseRed; 
       }
 
-      distance = (
+      distance = Math.sqrt(
         (hubPose.getY() - botPose.getY()) * (hubPose.getY() - botPose.getY()) +
         (hubPose.getX() - botPose.getX()) * (hubPose.getX() - botPose.getX())
       ); 
 
       targetAngularVelocity = m_ShooterSubsystem.getTargetVelocity(distance); 
+    
 
       
 
@@ -68,6 +76,7 @@ public class ShootCommand extends Command {
    
     SmartDashboard.putNumber("Target Angular Velocity", targetAngularVelocity);
     SmartDashboard.putNumber("Distance", distance);
+    hubPosePublisher.set(hubPose);
  
       
   

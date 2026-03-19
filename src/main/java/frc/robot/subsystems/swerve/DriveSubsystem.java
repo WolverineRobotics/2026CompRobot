@@ -208,7 +208,14 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         public void resetPose(Pose2d targetPose) {
-                odometry.resetPose(targetPose);
+                odometry.resetPosition(
+                        gyro.getRotation2d(),
+                        new SwerveModulePosition[] {
+                                frontLeftModule.getPosition(),
+                                frontRightModule.getPosition(),
+                                backLeftModule.getPosition(),
+                                backRightModule.getPosition(),
+                        } , targetPose);;
         }
         
         public Pose2d getBotPose() {
@@ -242,6 +249,8 @@ public class DriveSubsystem extends SubsystemBase {
                 );
 
                 SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
+                SmartDashboard.putNumber("Robot Angle", gyro.getRotation2d().getDegrees());
+                
 
                 double yawRate = (lastYaw - gyro.getYaw().getValueAsDouble()) / 0.2;
                 double pitchRate = (lastPitch - gyro.getPitch().getValueAsDouble()) / 0.2;
