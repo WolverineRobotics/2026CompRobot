@@ -30,28 +30,10 @@ public class ShootCommand extends Command {
 
     @Override 
     public void initialize() {
-      Pose2d hubPose = new Pose2d(); 
-      Pose2d botPose = m_DriveSubsystem.getBotPose(); 
-
       Optional<Alliance> ally = DriverStation.getAlliance();
-      if (ally.isPresent()) {
-          if (ally.get() == Alliance.Red) {
-             hubPose = DriveConstants.hubPoseRed;
-          }
-          if (ally.get() == Alliance.Blue) {
-             hubPose = DriveConstants.hubPoseBlue;
-          }
-      }
-      else {
-          hubPose = DriveConstants.hubPoseBlue; 
-      }
-
-      distance = (
-        (hubPose.getY() - botPose.getY()) * (hubPose.getY() - botPose.getY()) +
-        (hubPose.getX() - botPose.getX()) * (hubPose.getX() - botPose.getX())
-      ); 
-
-      targetAngularVelocity = m_ShooterSubsystem.getTargetVelocity(distance); 
+      targetAngularVelocity = m_ShooterSubsystem.getTargetVelocity(
+          m_DriveSubsystem.getHubDistance(ally.get() == Alliance.Red)
+      );  
 
       
 

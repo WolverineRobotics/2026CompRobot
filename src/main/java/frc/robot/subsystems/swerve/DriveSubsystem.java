@@ -12,6 +12,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -27,6 +28,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -43,6 +45,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         private final SwerveDriveKinematics kinematics; 
         private final SwerveDriveOdometry odometry;
+
 
         private final Pigeon2 gyro; 
 
@@ -242,6 +245,7 @@ public class DriveSubsystem extends SubsystemBase {
                 );
 
                 SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
+                SmartDashboard.putBoolean("In Shooting Range", inShootingRange()); 
 
                 double yawRate = (lastYaw - gyro.getYaw().getValueAsDouble()) / 0.2;
                 double pitchRate = (lastPitch - gyro.getPitch().getValueAsDouble()) / 0.2;
@@ -262,7 +266,44 @@ public class DriveSubsystem extends SubsystemBase {
                 lastPitch = gyro.getPitch().getValueAsDouble(); 
                 lastRoll = gyro.getRoll().getValueAsDouble(); 
 
+                
+
         
+        }
+
+        public double getHubDistance(boolean red) {
+                if (red) {
+                        return Math.hypot(
+                        (DriveConstants.hubPoseRed.getY() - getBotPose().getY()),
+                        (DriveConstants.hubPoseRed.getX() - getBotPose().getX())
+                        ); 
+                }
+
+                else {
+                        return Math.hypot(
+                        (DriveConstants.hubPoseBlue.getY() - getBotPose().getY()),
+                        (DriveConstants.hubPoseBlue.getX() - getBotPose().getX())
+                        ); 
+                }
+        }
+
+        public boolean inShootingRange() {
+                var alliance = DriverStation.getAlliance(); 
+                boolean red = false; 
+
+                if (alliance.get() == Alliance.Red) {
+                        red = true; 
+                }
+
+                if (DriveConstants.minShootingDistance <= getHubDistance(red) && 
+                    getHubDistance(red) <= DriveConstants.maxShootingDistance) {
+                        return true; 
+                }
+
+                else {
+                        return false; 
+                }
+
         }
 
 }
