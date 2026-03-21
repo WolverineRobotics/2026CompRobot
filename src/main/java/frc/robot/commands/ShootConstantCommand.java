@@ -46,20 +46,10 @@ public class ShootConstantCommand extends Command {
 
          m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
          
-         if (finishTimer.get() == 0) {
-             finishTimer.start();
-         }
-
-         
-     }
-
-     else {
-            finishTimer.reset();
-     }
-   
      
   
     }
+  }
 
     @Override
     public void end(boolean interrupted) {
@@ -69,7 +59,7 @@ public class ShootConstantCommand extends Command {
 
     @Override 
     public boolean isFinished() {
-        return !Input.spinFlywheel() || finishTimer.get() > 5;
+        return !Input.spinFlywheel(); 
     }
     
 }

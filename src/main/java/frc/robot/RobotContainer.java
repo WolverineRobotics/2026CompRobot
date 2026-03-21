@@ -53,7 +53,7 @@ public class RobotContainer {
 
   public void teleopSequence() {
     if (Input.spinFlywheel()) {
-      CommandScheduler.getInstance().schedule(new ShootVariableCommand(m_ShooterSubsystem, m_DriveSubsystem));
+      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelSpeed));
     }
 
     if (Input.startIntaking()) {
@@ -65,9 +65,6 @@ public class RobotContainer {
 
     if (Input.pivotIntake()) {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
-    }
-    if (Input.testShooter()) {
-      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, m_ShooterSubsystem.getTestSpeed()));
     }
 
    

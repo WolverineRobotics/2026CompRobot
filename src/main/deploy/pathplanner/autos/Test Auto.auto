@@ -9,12 +9,6 @@
           "data": {
             "name": "Pivot Intake"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pull out from hub"
-          }
         }
       ]
     }

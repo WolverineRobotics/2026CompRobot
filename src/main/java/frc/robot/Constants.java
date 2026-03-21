@@ -23,11 +23,12 @@ public class Constants {
         public static final double maxFlywheelSpeed = 30; 
 
         // Motor Percentage
-        public static final double defaultIndexerSpeed = -0.7; 
+        public static final double defaultIndexerSpeed = -0.8; 
 
         public static final int indexerCurrentLimit = 30; 
 
-        public static final double flywheelSpeed = 750; 
+        public static final double flywheelSpeed = 366.5191429; 
+
 
         public static final double hubHeight = Units.inchesToMeters(70); 
         public static final double shooterAngle = Units.degreesToRadians(60); 
@@ -36,6 +37,8 @@ public class Constants {
         public static final boolean flywheelInverted = true; 
         public static final double shootDisplacement = 0.23; 
         public static final double shooterHeight = Units.inchesToMeters(20);
+
+        
 
     }
 
@@ -129,8 +132,8 @@ public class Constants {
 
         public static final double reverseTolerence = 5; //degrees
 
-        public static final double maxShootingDistance = 1; 
-        public static final double minShootingDistance = 0; 
+        public static final double maxShootingDistance = 4.2; 
+        public static final double minShootingDistance = 3.7; 
 
 
 
