@@ -23,6 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax IntakeMotor;
     private final SparkMaxConfig leftPivotConfig;
     private final SparkMaxConfig rightPivotConfig; 
+    private final SparkMaxConfig rollerConfig; 
     
 
     public IntakeSubsystem() {
@@ -32,15 +33,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
         leftPivotConfig = new SparkMaxConfig(); 
         rightPivotConfig = new SparkMaxConfig(); 
+        rollerConfig = new SparkMaxConfig(); 
 
         leftPivotConfig.idleMode(IdleMode.kBrake); 
         leftPivotConfig.follow(rightPivotMotor, true);
+        leftPivotConfig.smartCurrentLimit(IntakeConstants.pivotCurrentLimit, IntakeConstants.pivotCurrentLimit);
         leftPivotConfig.inverted(IntakeConstants.leftPivotInverted);
         leftPivotMotor.configure(leftPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         rightPivotConfig.idleMode(IdleMode.kBrake); 
         rightPivotConfig.inverted(IntakeConstants.rightPivotInverted);
+        rightPivotConfig.smartCurrentLimit(IntakeConstants.pivotCurrentLimit, IntakeConstants.pivotCurrentLimit);
         rightPivotMotor.configure(rightPivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        rollerConfig.smartCurrentLimit(IntakeConstants.rollerCurrentLimit, IntakeConstants.rollerCurrentLimit); 
+        IntakeMotor.configure(rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
        
     }

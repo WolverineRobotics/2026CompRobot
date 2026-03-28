@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem  extends SubsystemBase {
@@ -72,21 +73,20 @@ public class ShooterSubsystem  extends SubsystemBase {
 
         flywheelConfig = new SparkMaxConfig(); 
         flywheelConfig.inverted(ShooterConstants.flywheelInverted); 
+        flywheelConfig.smartCurrentLimit(ShooterConstants.flywheelCurrentLimit, ShooterConstants.flywheelCurrentLimit);
         flywheelMotor.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void setFlyWheelSpeed(double targetSpeed) {
         SmartDashboard.putNumber("Target Speed", targetSpeed);
+        double ff = flywheelFeedforward.calculate(targetSpeed); 
         flywheelMotor.setVoltage(
-            flywheelFeedforward.calculate(targetSpeed) 
-            // flywheelPIDController.calculate(
-            //     getFlyWheelVelocity(),
-            //     targetSpeed
-            // ) 
+            ff
+
             
         );
 
-        SmartDashboard.putNumber("FeedForward Output", flywheelFeedforward.calculate(targetSpeed));
+        SmartDashboard.putNumber("FeedForward Output", ff);
         SmartDashboard.putNumber("PID Output",  flywheelPIDController.calculate(
                 flywheelEncoder.getVelocity(),
                 targetSpeed
@@ -101,6 +101,7 @@ public class ShooterSubsystem  extends SubsystemBase {
         flywheelMotor.setVoltage(12);
     }
 
+
    
     public void spinIndexer(double speed) {
         indexerMotor.set(speed);
@@ -111,7 +112,7 @@ public class ShooterSubsystem  extends SubsystemBase {
     }
 
     public double getFlyWheelVelocity() {
-        return Units.rotationsPerMinuteToRadiansPerSecond(flywheelEncoder.getVelocity()); 
+        return flywheelEncoder.getVelocity(); 
     }
 
     public double getTargetVelocity(double range) {
@@ -126,12 +127,12 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     @Override 
     public void periodic() {
-        SmartDashboard.putNumber("Flywheel Velocity RPM", Units.radiansPerSecondToRotationsPerMinute(getFlyWheelVelocity()));
+        SmartDashboard.putNumber("Flywheel Velocity RPM", getFlyWheelVelocity());
         SmartDashboard.putNumber("Flywheel Current Output", flywheelMotor.getOutputCurrent()); 
     }
 
     public double getTestSpeed() {
-        return Units.rotationsPerMinuteToRadiansPerSecond(testableRPM.getDouble(0)); 
+        return testableRPM.getDouble(0); 
     }
 
 

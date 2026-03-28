@@ -21,7 +21,7 @@ public class OuttakeCommand extends Command {
 
     @Override
     public void execute(){
-        m_IntakeSubsystem.spinRoller(-IntakeConstants.intakeSpeed);
+        m_IntakeSubsystem.spinRoller(-(IntakeConstants.intakeSpeed * 2));
     }
 
     @Override

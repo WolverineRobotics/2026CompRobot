@@ -22,12 +22,14 @@ public class ShootConstantCommand extends Command {
     private final ShooterSubsystem m_ShooterSubsystem; 
     private final double angularVelocity; 
     private final Timer finishTimer; 
+   
   
 
     public ShootConstantCommand(ShooterSubsystem m_ShooterSubsystem, double angularVelocity) {
       this.m_ShooterSubsystem = m_ShooterSubsystem; 
       this.angularVelocity = angularVelocity; 
       finishTimer = new Timer(); 
+     
     
     }
 

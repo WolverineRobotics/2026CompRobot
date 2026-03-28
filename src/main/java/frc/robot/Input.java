@@ -45,8 +45,8 @@ public class Input {
         return opController.getBButton(); 
     }
 
-    public static boolean testShooter() {
-        return opController.getXButton(); 
+    public static boolean funnelFuel() {
+        return opController.getYButton(); 
     }
 
 

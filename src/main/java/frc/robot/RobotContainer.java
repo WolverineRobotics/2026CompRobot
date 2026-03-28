@@ -44,7 +44,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Input.rightBumper.whileTrue(new ShootCommand(m_ShooterSubsystem, m_DriveSubsystem));
-    Input.xButton.whileTrue(new ShootConstantCommand(m_ShooterSubsystem, m_ShooterSubsystem.getTestSpeed())); 
+    
   }
 
   public Command getAutonomousCommand() {
@@ -54,6 +54,10 @@ public class RobotContainer {
   public void teleopSequence() {
     if (Input.spinFlywheel()) {
       CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelSpeed));
+    }
+
+    if (Input.funnelFuel()) {
+
     }
 
     if (Input.startIntaking()) {

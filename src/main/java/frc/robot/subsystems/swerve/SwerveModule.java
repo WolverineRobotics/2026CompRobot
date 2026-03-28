@@ -52,6 +52,7 @@ public class SwerveModule {
         driveMotor = new SparkMax(driveCANID, MotorType.kBrushless); 
         driveConfig = new SparkMaxConfig(); 
         driveConfig.idleMode(IdleMode.kCoast);
+        driveConfig.smartCurrentLimit(DriveConstants.driveCurrentLimit, DriveConstants.driveCurrentLimit); 
         driveConfig.inverted(driveInverted);
         driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
         
@@ -59,6 +60,7 @@ public class SwerveModule {
         angleMotor = new SparkMax(angleMotorCANID, MotorType.kBrushless);
         angleConfig = new SparkMaxConfig(); 
         angleConfig.idleMode(IdleMode.kBrake);
+        angleConfig.smartCurrentLimit(DriveConstants.angleCurrentLimit, DriveConstants.angleCurrentLimit); 
         angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);   
 
         absoluteEncoderInput = new AnalogInput(encoderID); 
@@ -100,7 +102,7 @@ public class SwerveModule {
         
         double targetAngle = -targetState.angle.getDegrees(); 
         double currentAngle = getAbsoluteAngle().getDegrees(); 
-        double targetSpeed = targetState.speedMetersPerSecond; 
+        double targetSpeed = -targetState.speedMetersPerSecond; 
 
         SmartDashboard.putNumber("Should Reverse", Math.floor(targetAngle / 180) % 2); 
 

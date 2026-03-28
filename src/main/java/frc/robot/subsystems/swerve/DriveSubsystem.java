@@ -28,6 +28,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,6 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         private final SwerveDriveKinematics kinematics; 
         private final SwerveDriveOdometry odometry;
+        private final SwerveDrivePoseEstimator poseEstimator; 
 
 
         private final Pigeon2 gyro; 
@@ -52,6 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
         private final StructArrayPublisher<SwerveModuleState> modulePublisher; 
         private final StructArrayPublisher<SwerveModuleState> targetPublisher; 
         private final StructPublisher<Pose2d> posePublisher; 
+        private final StructPublisher<Pose2d> purePublisher; 
 
         private double lastYaw; 
         private double lastPitch; 
@@ -120,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
                 try{
                         config = RobotConfig.fromGUISettings();
                         AutoBuilder.configure(
-                        this::getRobotPose, 
+                        this::getBotPose, 
                         this::resetPose,
                         this::getRobotRelativeSpeeds,
                         (speeds, feedforwards) -> driveRobotOriented(speeds),
@@ -149,10 +152,23 @@ public class DriveSubsystem extends SubsystemBase {
                 modulePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
                 targetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/TargetStates", SwerveModuleState.struct).publish();
                 posePublisher = NetworkTableInstance.getDefault().getStructTopic("Bot Pose", Pose2d.struct).publish(); 
+                purePublisher = NetworkTableInstance.getDefault().getStructTopic("Lime Pose", Pose2d.struct).publish(); 
 
                 lastYaw = 0; 
                 lastRoll = 0; 
                 lastPitch = 0; 
+
+                poseEstimator = new SwerveDrivePoseEstimator(
+                        kinematics,
+                        gyro.getRotation2d(),
+                        new SwerveModulePosition[] {
+                                frontLeftModule.getPosition(),
+                                frontRightModule.getPosition(),
+                                backLeftModule.getPosition(),
+                                backRightModule.getPosition(),
+                        }, 
+                        odometry.getPoseMeters()
+                );
 
                 
         
@@ -195,10 +211,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         }
 
-        public Pose2d getRobotPose() {
-                return odometry.getPoseMeters();
-        }
-
         public ChassisSpeeds getRobotRelativeSpeeds() {
                 return kinematics.toChassisSpeeds(
                         new SwerveModuleState[] {
@@ -222,7 +234,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
         
         public Pose2d getBotPose() {
-         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose;
+         return poseEstimator.getEstimatedPosition(); 
         }
 
         @Override 
@@ -253,6 +265,11 @@ public class DriveSubsystem extends SubsystemBase {
 
                 SmartDashboard.putNumber("FL Drive", frontLeftModule.getDriveVelocity()); 
                 SmartDashboard.putNumber("Robot Angle", gyro.getRotation2d().getDegrees());
+
+                SmartDashboard.putNumber("FR Angle", frontRightModule.getAbsoluteAngle().getDegrees()); 
+                SmartDashboard.putNumber("FL Angle", frontLeftModule.getAbsoluteAngle().getDegrees()); 
+                SmartDashboard.putNumber("BR Angle", backRightModule.getAbsoluteAngle().getDegrees()); 
+                SmartDashboard.putNumber("BL Angle", backLeftModule.getAbsoluteAngle().getDegrees()); 
                 
                 SmartDashboard.putBoolean("In Shooting Range", inShootingRange());
                 SmartDashboard.putNumber("Distance", getHubDistance(true)); 
@@ -269,6 +286,10 @@ public class DriveSubsystem extends SubsystemBase {
                         gyro.getRoll().getValueAsDouble(), 
                         rollRate
                 );
+                
+                purePublisher.set(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
+
+                poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose, Timer.getFPGATimestamp());
 
                 posePublisher.set(getBotPose());
 

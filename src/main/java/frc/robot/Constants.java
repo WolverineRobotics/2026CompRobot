@@ -15,8 +15,8 @@ public class Constants {
         public static final double flyWheelKi = 0.0000; 
         public static final double flyWheelKd = 0.0000000; 
 
-        public static final double flyWheelKs = 0.1; 
-        public static final double flyWheelKv = 0.01714285714; 
+        public static final double flyWheelKs = 0.125; 
+        public static final double flyWheelKv = 0.001792021; 
  
 
         // Radians per Second 
@@ -27,7 +27,8 @@ public class Constants {
 
         public static final int indexerCurrentLimit = 30; 
 
-        public static final double flywheelSpeed = 366.5191429; 
+        public static final double flywheelSpeed = 2850; 
+        public static final double flywheelFunnelSpeed = 4250; 
 
 
         public static final double hubHeight = Units.inchesToMeters(70); 
@@ -37,6 +38,8 @@ public class Constants {
         public static final boolean flywheelInverted = true; 
         public static final double shootDisplacement = 0.23; 
         public static final double shooterHeight = Units.inchesToMeters(20);
+
+        public static final int flywheelCurrentLimit = 40; 
 
         
 
@@ -88,10 +91,10 @@ public class Constants {
         public static final boolean backLeftDriveInverted = true;
 
         // Absolute Encoder offsets 
-        public static final double frontRightEncoderOffset = -118;
-        public static final double frontLeftEncoderOffset = 42;
-        public static final double backRightEncoderOffset = -29;
-        public static final double backLeftEncoderOffset = 43;
+        public static final double frontRightEncoderOffset = -234;
+        public static final double frontLeftEncoderOffset = -137;
+        public static final double backRightEncoderOffset = -206;
+        public static final double backLeftEncoderOffset = -135;
 
         // Absolute Encoder Inversion
         public static final boolean frontLeftInverted = true; 
@@ -127,13 +130,17 @@ public class Constants {
             new Rotation2d()        
         ); 
 
-        public static final double maxSpeed = 10 * driveScaling; // m/s 
-        public static final double maxAngularVelocity = (4 * Math.PI); //rad/s
+        public static final double maxSpeed = 20 * driveScaling; // m/s 
+        public static final double maxAngularVelocity = (8 * Math.PI); //rad/s
 
         public static final double reverseTolerence = 5; //degrees
 
         public static final double maxShootingDistance = 4.2; 
         public static final double minShootingDistance = 3.7; 
+
+        public static final int driveCurrentLimit = 40; 
+        public static final int angleCurrentLimit = 40; 
+
 
 
 
@@ -148,12 +155,16 @@ public class Constants {
         public static final double stressedIntakeCurrentDraw = 22; 
 
         //Base Intake
-        public static final double intakeSpeed = 0.5; //temp 
+        public static final double intakeSpeed = 0.45; //temp 
 
         public static final double pivotSpeed = -0.3; 
 
         public static final boolean leftPivotInverted = false; 
         public static final boolean rightPivotInverted = false; 
+
+        public static final int pivotCurrentLimit = 40; 
+        public static final int rollerCurrentLimit = 40; 
+
 
     }
 
