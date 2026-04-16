@@ -15,8 +15,8 @@ public class Constants {
         public static final double flyWheelKi = 0.0000; 
         public static final double flyWheelKd = 0.0000000; 
 
-        public static final double flyWheelKs = 0.125; 
-        public static final double flyWheelKv = 0.001792021; 
+        public static final double flyWheelKs = 0.2; 
+        public static final double flyWheelKv = 0.001875; 
  
 
         // Radians per Second 

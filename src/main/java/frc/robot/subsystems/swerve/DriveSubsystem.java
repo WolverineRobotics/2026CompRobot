@@ -196,6 +196,10 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         }
+        public void PIDDebugger() {
+                frontLeftModule.setState(new SwerveModuleState(0, new Rotation2d(90)));
+        }
+
         private void driveRobotOriented(ChassisSpeeds targetSpeeds) {
                 SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds); 
 
