@@ -130,7 +130,7 @@ public class Constants {
             new Rotation2d()        
         ); 
 
-        public static final double maxSpeed = 20 * driveScaling; // m/s 
+        public static final double maxSpeed = 5 * driveScaling; // m/s 
         public static final double maxAngularVelocity = (8 * Math.PI); //rad/s
 
         public static final double reverseTolerence = 5; //degrees
