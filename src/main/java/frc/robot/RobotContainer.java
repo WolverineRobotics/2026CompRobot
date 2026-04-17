@@ -56,10 +56,6 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelSpeed));
     }
 
-    if (Input.funnelFuel()) {
-
-    }
-
     if (Input.startIntaking()) {
       CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
     }

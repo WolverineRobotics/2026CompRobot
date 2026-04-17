@@ -39,20 +39,21 @@ public class Input {
     }
    
     public static boolean startIntaking() {
-        return opController.getAButton(); 
+        return opController.getLeftBumperButton(); 
     }
     public static boolean startOuttaking() {
         return opController.getBButton(); 
     }
 
-    public static boolean funnelFuel() {
+    public static boolean pivotIntake() {
         return opController.getYButton(); 
     }
 
-
-    public static boolean pivotIntake() {
-        return opController.getLeftBumperButton(); 
+    public static boolean spinIndexer() {
+        return opController.getAButton(); 
     }
+
+    
 
   
 }

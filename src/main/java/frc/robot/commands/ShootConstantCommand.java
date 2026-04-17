@@ -44,7 +44,7 @@ public class ShootConstantCommand extends Command {
         
 
      m_ShooterSubsystem.setFlyWheelSpeed(angularVelocity);
-     if (m_ShooterSubsystem.getFlyWheelVelocity() > Math.abs(angularVelocity)) {
+     if ((m_ShooterSubsystem.getFlyWheelVelocity() > Math.abs(angularVelocity)) || Input.spinIndexer()) {
 
          m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
          
