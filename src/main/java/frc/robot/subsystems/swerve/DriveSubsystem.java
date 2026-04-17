@@ -191,7 +191,7 @@ public class DriveSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("Front Left Target Drive", Units.radiansPerSecondToRotationsPerMinute(targetStates[0].speedMetersPerSecond * DriveConstants.wheelRadius));
                 frontLeftModule.setState(targetStates[0]);
                 frontRightModule.setState(targetStates[1]);
-                backLeftModule.setState(targetStates[2]);
+                backLeftModule.setState(targetStates[2]); 
                 backRightModule.setState(targetStates[3]);
 
 

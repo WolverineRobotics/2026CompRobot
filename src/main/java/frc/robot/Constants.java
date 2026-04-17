@@ -91,10 +91,10 @@ public class Constants {
         public static final boolean backLeftDriveInverted = true;
 
         // Absolute Encoder offsets 
-        public static final double frontRightEncoderOffset = -234;
-        public static final double frontLeftEncoderOffset = -137;
-        public static final double backRightEncoderOffset = -206;
-        public static final double backLeftEncoderOffset = -135;
+        public static final double frontRightEncoderOffset = -348.03787026433037;
+        public static final double frontLeftEncoderOffset = -138.5165671249478;
+        public static final double backRightEncoderOffset = -208.03525159871367;
+        public static final double backLeftEncoderOffset = -134.3758299087545;
 
         // Absolute Encoder Inversion
         public static final boolean frontLeftInverted = true; 
