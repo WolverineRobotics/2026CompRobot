@@ -91,7 +91,7 @@ public class Constants {
         public static final boolean backLeftDriveInverted = true;
 
         // Absolute Encoder offsets 
-        public static final double frontRightEncoderOffset = -348.03787026433037;
+        public static final double frontRightEncoderOffset = -274.68882560057784;
         public static final double frontLeftEncoderOffset = -138.5165671249478;
         public static final double backRightEncoderOffset = -208.03525159871367;
         public static final double backLeftEncoderOffset = -134.3758299087545;
@@ -155,7 +155,7 @@ public class Constants {
         public static final double stressedIntakeCurrentDraw = 22; 
 
         //Base Intake
-        public static final double intakeSpeed = 0.45; //temp 
+        public static final double intakeSpeed = 0.25; //temp 
 
         public static final double pivotSpeed = -0.3; 
 
