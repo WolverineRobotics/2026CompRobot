@@ -67,6 +67,10 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
     }
 
+    if (Input.funnelFuel()) {
+      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, 0));
+    }
+
    
     
     SmartDashboard.putData(CommandScheduler.getInstance());

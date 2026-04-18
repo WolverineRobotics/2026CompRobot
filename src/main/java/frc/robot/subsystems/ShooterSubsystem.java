@@ -98,7 +98,7 @@ public class ShooterSubsystem  extends SubsystemBase {
     }
 
     public void KsDebugger() {
-        flywheelMotor.setVoltage(6);
+        flywheelMotor.setVoltage(12);
     }
 
 
