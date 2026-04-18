@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.OuttakeCommand;
-import frc.robot.commands.intake.PivotCommand;
+import frc.robot.commands.intake.PivotAutoCommand;
+import frc.robot.commands.intake.PivotManualCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.shooter.ShootConstantCommand;
 import frc.robot.commands.shooter.ShootVariableCommand;
@@ -36,7 +37,7 @@ public class RobotContainer {
     m_IntakeSubsystem = new IntakeSubsystem(); 
 
     NamedCommands.registerCommand("Shoot Fuel", new ShootConstantCommand(m_ShooterSubsystem, 0));
-    NamedCommands.registerCommand("Pivot Intake", new PivotCommand(m_IntakeSubsystem));
+    NamedCommands.registerCommand("Pivot Intake", new PivotAutoCommand(m_IntakeSubsystem));
 
   }
 
@@ -61,12 +62,16 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(new OuttakeCommand(m_IntakeSubsystem));
     }
 
-    if (Input.pivotIntake()) {
-      CommandScheduler.getInstance().schedule(new PivotCommand(m_IntakeSubsystem));
+    if (Input.lowerIntake()) {
+      CommandScheduler.getInstance().schedule(new PivotAutoCommand(m_IntakeSubsystem));
     }
 
     if (Input.funnelFuel()) {
       CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelFunnelSpeed));
+    }
+
+    if (Input.getPivotSpeed() != 0) {
+      CommandScheduler.getInstance().schedule(new PivotManualCommand(m_IntakeSubsystem));
     }
 
    

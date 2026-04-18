@@ -37,6 +37,10 @@ public class Input {
     public static double getRotation() {
         return deadband(driveController.getRightX()); 
     }
+
+    public static double getPivotSpeed() {
+        return deadband(opController.getRightY() * 0.5); 
+    }
    
     public static boolean startIntaking() {
         return opController.getLeftBumperButton(); 
@@ -45,7 +49,7 @@ public class Input {
         return opController.getBButton(); 
     }
 
-    public static boolean pivotIntake() {
+    public static boolean lowerIntake() {
         return opController.getYButton(); 
     }
 

@@ -8,12 +8,12 @@ import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class PivotCommand extends Command {
+public class PivotAutoCommand extends Command {
 
     private final IntakeSubsystem m_IntakeSubsystem;
     private final Timer finishTimer; 
 
-    public PivotCommand(IntakeSubsystem m_IntakeSubsystem) {
+    public PivotAutoCommand(IntakeSubsystem m_IntakeSubsystem) {
         this.m_IntakeSubsystem = m_IntakeSubsystem;
         finishTimer = new Timer(); 
         this.addRequirements(m_IntakeSubsystem); 
