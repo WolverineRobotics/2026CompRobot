@@ -155,7 +155,7 @@ public class Constants {
         public static final double stressedIntakeCurrentDraw = 22; 
 
         //Base Intake
-        public static final double intakeSpeed = 0.25; //temp 
+        public static final double intakeSpeed = 0.45; //temp 
 
         public static final double pivotSpeed = -0.3; 
 

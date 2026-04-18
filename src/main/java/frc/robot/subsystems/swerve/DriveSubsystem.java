@@ -295,6 +295,16 @@ public class DriveSubsystem extends SubsystemBase {
 
                 poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose, Timer.getFPGATimestamp());
 
+                poseEstimator.update(
+                        gyro.getRotation2d(), 
+                        new SwerveModulePosition[] {
+                                frontLeftModule.getPosition(),
+                                frontRightModule.getPosition(), 
+                                backLeftModule.getPosition(), 
+                                backRightModule.getPosition()
+                        }
+                ); 
+
                 posePublisher.set(getBotPose());
 
                 lastYaw = gyro.getYaw().getValueAsDouble(); 

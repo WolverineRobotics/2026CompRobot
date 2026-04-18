@@ -5,9 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Pivot Intake"
+            "pathName": "Pull out from hub"
           }
         }
       ]
