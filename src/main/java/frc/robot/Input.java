@@ -53,10 +53,6 @@ public class Input {
         return opController.getAButton(); 
     }
 
-    public static boolean funnelFuel() {
-        return opController.getXButton(); 
-    }
-
     
 
   
