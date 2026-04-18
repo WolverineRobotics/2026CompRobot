@@ -85,7 +85,7 @@ public class SwerveModule {
             DriveConstants.kAngleI,
             DriveConstants.kAngleD
         ); 
-        anglePID.enableContinuousInput(-90, 90);
+        anglePID.enableContinuousInput(0, 360);
 
         // Defining encoder offset
         encoderOffset = offset; 
@@ -106,10 +106,10 @@ public class SwerveModule {
 
         SmartDashboard.putNumber("Should Reverse", Math.floor(targetAngle / 180) % 2); 
 
-        if (Math.abs(Math.floor(targetAngle / 180) % 2) == 1) {
-            targetSpeed *= -1; 
+        // if (Math.abs(Math.floor(targetAngle / 180) % 2) == 1) {
+        //     targetSpeed *= -1; 
 
-        }
+        // }
         
 
         // Setting the drive and angle motors using PID controllers and the target module state
