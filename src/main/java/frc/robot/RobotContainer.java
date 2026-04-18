@@ -12,14 +12,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.OuttakeCommand;
-import frc.robot.commands.PivotCommand;
+import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.intake.OuttakeCommand;
+import frc.robot.commands.intake.PivotCommand;
 import frc.robot.subsystems.IntakeSubsystem;
-
-
-import frc.robot.commands.ShootConstantCommand;
-import frc.robot.commands.ShootVariableCommand;
+import frc.robot.commands.shooter.ShootConstantCommand;
+import frc.robot.commands.shooter.ShootVariableCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 

@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
-import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.drive.DefaultDriveCommand;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -173,14 +173,9 @@ public class DriveSubsystem extends SubsystemBase {
                 
         
         }
-        public void drive(double vertical, double horizontal, double rotation) {
+        public void drive(ChassisSpeeds targetSpeeds) {
                 SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(
-                        ChassisSpeeds.fromFieldRelativeSpeeds(
-                                vertical * DriveConstants.maxSpeed, 
-                                horizontal * DriveConstants.maxSpeed, 
-                                rotation * DriveConstants.maxAngularVelocity, 
-                                gyro.getRotation2d()
-                        )
+                       targetSpeeds
                 ); 
 
                 

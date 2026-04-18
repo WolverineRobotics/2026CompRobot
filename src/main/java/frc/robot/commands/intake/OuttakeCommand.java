@@ -1,15 +1,15 @@
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Input;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class IntakeCommand extends Command {
+public class OuttakeCommand extends Command {
 
     private final IntakeSubsystem m_IntakeSubsystem;
 
-    public IntakeCommand(IntakeSubsystem m_IntakeSubsystem) {
+    public OuttakeCommand(IntakeSubsystem m_IntakeSubsystem) {
         this.m_IntakeSubsystem = m_IntakeSubsystem; 
         this.addRequirements(m_IntakeSubsystem);
     }
@@ -21,7 +21,7 @@ public class IntakeCommand extends Command {
 
     @Override
     public void execute(){
-        m_IntakeSubsystem.spinRoller(IntakeConstants.intakeSpeed);
+        m_IntakeSubsystem.spinRoller(-(IntakeConstants.intakeSpeed * 2));
     }
 
     @Override
@@ -31,7 +31,7 @@ public class IntakeCommand extends Command {
 
     @Override
     public boolean isFinished(){
-        return !Input.startIntaking(); 
+        return !Input.startOuttaking(); 
     }
 
 
