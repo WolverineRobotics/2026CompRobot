@@ -105,6 +105,7 @@ public class DriveSubsystem extends SubsystemBase {
                 );
 
                 gyro = new Pigeon2(DriveConstants.gyroID); 
+                gyro.reset();
 
                 odometry = new SwerveDriveOdometry(
                         kinematics, 
@@ -195,6 +196,10 @@ public class DriveSubsystem extends SubsystemBase {
                 frontLeftModule.setState(new SwerveModuleState(0, new Rotation2d(90)));
         }
 
+        public Rotation2d getGyroReading() {
+                return gyro.getRotation2d(); 
+        }
+
         private void driveRobotOriented(ChassisSpeeds targetSpeeds) {
                 SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds); 
 
@@ -272,6 +277,8 @@ public class DriveSubsystem extends SubsystemBase {
                 
                 SmartDashboard.putBoolean("In Shooting Range", inShootingRange());
                 SmartDashboard.putNumber("Distance", getHubDistance(true)); 
+
+                SmartDashboard.putNumber("Robot Rotation", gyro.getRotation2d().getDegrees()); 
 
                 double yawRate = (lastYaw - gyro.getYaw().getValueAsDouble()) / 0.2;
                 double pitchRate = (lastPitch - gyro.getPitch().getValueAsDouble()) / 0.2;

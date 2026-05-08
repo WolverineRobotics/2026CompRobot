@@ -47,7 +47,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Test Auto");
+    return null;
   }
 
   public void teleopSequence() {

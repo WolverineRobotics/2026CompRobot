@@ -26,7 +26,7 @@ public class DefaultDriveCommand extends Command {
                                 Input.getVertical() * DriveConstants.maxSpeed, 
                                 Input.getHorizontal() * DriveConstants.maxSpeed, 
                                 Input.getRotation() * DriveConstants.maxAngularVelocity, 
-                                m_DriveSubsystem.getBotPose().getRotation()
+                                m_DriveSubsystem.getGyroReading()
                         )
         ); 
   

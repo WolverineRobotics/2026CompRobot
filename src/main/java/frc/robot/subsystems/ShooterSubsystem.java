@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.PersistMode;
@@ -16,12 +18,16 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
 
@@ -38,7 +44,9 @@ public class ShooterSubsystem  extends SubsystemBase {
     private final PIDController flywheelPIDController; 
     private final SimpleMotorFeedforward flywheelFeedforward; 
     private final GenericEntry testableRPM; 
-    
+
+    private final SysIdRoutine tuningRoutine; 
+       
     
         public ShooterSubsystem() {
             flywheelMotor = new SparkFlex(
@@ -66,6 +74,15 @@ public class ShooterSubsystem  extends SubsystemBase {
             );
     
             testableRPM = Shuffleboard.getTab("Tuning").add("RPM", 0).getEntry();
+
+            tuningRoutine = new SysIdRoutine(
+                new SysIdRoutine.Config(), 
+                new SysIdRoutine.Mechanism(this::setVoltage, 
+                 log -> {
+                 log.motor("flywheel-motor").voltage(getFlywheelVoltage()).angularPosition(getFlywheelAngle()).angularVelocity(getFlyWheelVelocity())
+
+            }, this)
+            );
 
         indexerConfig = new SparkMaxConfig(); 
         indexerConfig.smartCurrentLimit(ShooterConstants.indexerCurrentLimit, ShooterConstants.indexerCurrentLimit);
@@ -97,8 +114,8 @@ public class ShooterSubsystem  extends SubsystemBase {
         setFlyWheelSpeed(-500);
     }
 
-    public void KsDebugger() {
-        flywheelMotor.setVoltage(6);
+    public void setVoltage(Voltage targetVoltage) {
+        flywheelMotor.setVoltage(targetVoltage);
     }
 
 
@@ -111,8 +128,16 @@ public class ShooterSubsystem  extends SubsystemBase {
         flywheelMotor.set(speed); 
     }
 
-    public double getFlyWheelVelocity() {
-        return flywheelEncoder.getVelocity(); 
+    public AngularVelocity getFlyWheelVelocity() {
+        return RadiansPerSecond.of(Units.rotationsPerMinuteToRadiansPerSecond(flywheelEncoder.getVelocity())); 
+    }
+
+    public Angle getFlywheelAngle() {
+        return Radians.of(flywheelEncoder.getPosition()); 
+    }
+
+    public Voltage getFlywheelVoltage() {
+        return Volts.of(flywheelMotor.getBusVoltage()); 
     }
 
     public double getTargetVelocity(double range) {
@@ -127,13 +152,19 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     @Override 
     public void periodic() {
-        SmartDashboard.putNumber("Flywheel Velocity RPM", getFlyWheelVelocity());
+        SmartDashboard.putNumber("Flywheel Velocity RPM", getFlyWheelVelocity().magnitude());
         SmartDashboard.putNumber("Flywheel Current Output", flywheelMotor.getOutputCurrent()); 
     }
 
     public double getTestSpeed() {
         return testableRPM.getDouble(0); 
     }
+
+    public Command QuasiStaticTest(SysIdRoutine.Direction direction) {
+        return tuningRoutine.quasistatic(direction); 
+    }
+
+
 
 
 

@@ -39,7 +39,7 @@ public class Input {
     }
 
     public static double getPivotSpeed() {
-        return deadband(opController.getRightY() * 0.5); 
+        return deadband(opController.getRightY() * 0.25); 
     }
    
     public static boolean startIntaking() {
