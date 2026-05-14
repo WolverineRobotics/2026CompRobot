@@ -97,10 +97,9 @@ public class ShooterSubsystem  extends SubsystemBase {
     public void setFlyWheelSpeed(double targetSpeed) {
         SmartDashboard.putNumber("Target Speed", targetSpeed);
         double ff = flywheelFeedforward.calculate(targetSpeed); 
+        double pid = flywheelPIDController.calculate(getFlyWheelVelocity().abs(RadiansPerSecond), targetSpeed); 
         flywheelMotor.setVoltage(
-            ff
-
-            
+            ff + pid           
         );
 
         SmartDashboard.putNumber("FeedForward Output", ff);
@@ -160,8 +159,12 @@ public class ShooterSubsystem  extends SubsystemBase {
         return testableRPM.getDouble(0); 
     }
 
-    public Command QuasiStaticTest(SysIdRoutine.Direction direction) {
+    public Command getQuasiStaticTest(SysIdRoutine.Direction direction) {
         return tuningRoutine.quasistatic(direction); 
+    }
+
+    public Command getDynamicTest(SysIdRoutine.Direction direction) {
+        return tuningRoutine.dynamic(direction);
     }
 
 
