@@ -70,7 +70,8 @@ public class ShooterSubsystem  extends SubsystemBase {
     
             flywheelFeedforward = new SimpleMotorFeedforward(
                 ShooterConstants.flyWheelKs,
-                ShooterConstants.flyWheelKv     
+                ShooterConstants.flyWheelKv, 
+                ShooterConstants.flywheelKa     
             );
     
             testableRPM = Shuffleboard.getTab("Tuning").add("RPM", 0).getEntry();
@@ -79,7 +80,7 @@ public class ShooterSubsystem  extends SubsystemBase {
                 new SysIdRoutine.Config(), 
                 new SysIdRoutine.Mechanism(this::setVoltage, 
                  log -> {
-                 log.motor("flywheel-motor").voltage(getFlywheelVoltage()).angularPosition(getFlywheelAngle()).angularVelocity(getFlyWheelVelocity())
+                 log.motor("flywheel-motor").voltage(getFlywheelVoltage()).angularPosition(getFlywheelAngle()).angularVelocity(getFlyWheelVelocity());
 
             }, this)
             );
@@ -98,6 +99,7 @@ public class ShooterSubsystem  extends SubsystemBase {
         SmartDashboard.putNumber("Target Speed", targetSpeed);
         double ff = flywheelFeedforward.calculate(targetSpeed); 
         double pid = flywheelPIDController.calculate(getFlyWheelVelocity().abs(RadiansPerSecond), targetSpeed); 
+        SmartDashboard.putNumber("PID Effort", pid); 
         flywheelMotor.setVoltage(
             ff + pid           
         );
@@ -136,7 +138,7 @@ public class ShooterSubsystem  extends SubsystemBase {
     }
 
     public Voltage getFlywheelVoltage() {
-        return Volts.of(flywheelMotor.getBusVoltage()); 
+        return Volts.of(flywheelMotor.getBusVoltage() * flywheelMotor.getAppliedOutput()); 
     }
 
     public double getTargetVelocity(double range) {
@@ -151,7 +153,7 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     @Override 
     public void periodic() {
-        SmartDashboard.putNumber("Flywheel Velocity RPM", getFlyWheelVelocity().magnitude());
+        SmartDashboard.putNumber("Flywheel Velocity RPM", getFlyWheelVelocity().abs(RadiansPerSecond));
         SmartDashboard.putNumber("Flywheel Current Output", flywheelMotor.getOutputCurrent()); 
     }
 
@@ -165,6 +167,13 @@ public class ShooterSubsystem  extends SubsystemBase {
 
     public Command getDynamicTest(SysIdRoutine.Direction direction) {
         return tuningRoutine.dynamic(direction);
+    }
+
+    public Command setVoltageCommand() {
+        return startEnd(
+            () -> setVoltage(Volts.of(6)), 
+            () -> setVoltage(Volts.of(0))
+        ); 
     }
 
 

@@ -51,9 +51,9 @@ public class ShootVariableCommand extends Command {
         
 
      m_ShooterSubsystem.setFlyWheelSpeed(targetAngularVelocity);
-     if (m_ShooterSubsystem.getFlyWheelVelocity() > Math.abs(targetAngularVelocity)) {
-         m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
-     }
+    //  if (m_ShooterSubsystem.getFlyWheelVelocity() > Math.abs(targetAngularVelocity)) {
+    //      m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
+    //  }
    
     SmartDashboard.putNumber("Target Angular Velocity", targetAngularVelocity);
     SmartDashboard.putNumber("Distance", distance);

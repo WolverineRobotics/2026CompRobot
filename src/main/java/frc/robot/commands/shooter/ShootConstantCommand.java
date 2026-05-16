@@ -1,5 +1,7 @@
 package frc.robot.commands.shooter;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,7 +46,7 @@ public class ShootConstantCommand extends Command {
         
 
      m_ShooterSubsystem.setFlyWheelSpeed(angularVelocity);
-     if ((m_ShooterSubsystem.getFlyWheelVelocity() > Math.abs(angularVelocity)) || Input.spinIndexer()) {
+     if ((m_ShooterSubsystem.getFlyWheelVelocity().abs(RadiansPerSecond) > Math.abs(angularVelocity)) || Input.spinIndexer()) {
 
          m_ShooterSubsystem.spinIndexer(ShooterConstants.defaultIndexerSpeed);
          

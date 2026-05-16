@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.OuttakeCommand;
@@ -51,24 +52,28 @@ public class RobotContainer {
   }
 
   public void teleopSequence() {
+     if (Input.funnelFuel()) {
+      CommandScheduler.getInstance().schedule(
+        m_ShooterSubsystem.getQuasiStaticTest(Direction.kForward)
+      );
+    }
+
     if (Input.spinFlywheel()) {
-      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelSpeed));
+      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, 300));
     }
 
     if (Input.startIntaking()) {
-      CommandScheduler.getInstance().schedule(new IntakeCommand(m_IntakeSubsystem));
+      CommandScheduler.getInstance().schedule(m_ShooterSubsystem.getDynamicTest(Direction.kForward));
     }
     if (Input.startOuttaking()) {
-      CommandScheduler.getInstance().schedule(new OuttakeCommand(m_IntakeSubsystem));
+      CommandScheduler.getInstance().schedule(m_ShooterSubsystem.getDynamicTest(Direction.kReverse));
     }
 
     if (Input.lowerIntake()) {
       CommandScheduler.getInstance().schedule(new PivotAutoCommand(m_IntakeSubsystem));
     }
 
-    if (Input.funnelFuel()) {
-      CommandScheduler.getInstance().schedule(new ShootConstantCommand(m_ShooterSubsystem, ShooterConstants.flywheelFunnelSpeed));
-    }
+   
 
     if (Input.getPivotSpeed() != 0) {
       CommandScheduler.getInstance().schedule(new PivotManualCommand(m_IntakeSubsystem));

@@ -11,12 +11,13 @@ public class Constants {
         public static final int flywheelCANID = 31; 
         public static final int indexerCANID = 32; 
 
-        public static final double flyWheelKp = 0.0; 
-        public static final double flyWheelKi = 0.0000; 
+        public static final double flyWheelKp = 0.0061793; 
+        public static final double flyWheelKi = 0.1; 
         public static final double flyWheelKd = 0.0000000; 
 
-        public static final double flyWheelKs = 0.2; 
-        public static final double flyWheelKv = 0.001875; 
+        public static final double flyWheelKs = 0.04665; 
+        public static final double flyWheelKv = 0.10789; 
+        public static final double flywheelKa = 0.017497; 
  
 
         // Radians per Second 
